@@ -23,7 +23,7 @@ from architectures.basic_rag import basic_rag
 from architectures.hyde_rag import rag_with_hyde
 
 embedding_model = "sentence-transformers/all-MiniLM-L6-v2"
-base_path = "../datasets/SQuAD-2.0/transformed_squad/"
+base_path = "datasets/SQuAD-2.0/transformed_squad/"
 
 
 def load_transformed_squad():

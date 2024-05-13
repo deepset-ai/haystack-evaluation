@@ -17,7 +17,7 @@ from architectures.basic_rag import basic_rag
 from architectures.hyde_rag import rag_with_hyde
 
 embedding_model = "sentence-transformers/all-MiniLM-L6-v2"
-files_path = "../datasets/ARAGOG/papers_for_questions"
+files_path = "datasets/ARAGOG/papers_for_questions"
 
 
 def indexing():
@@ -39,7 +39,7 @@ def indexing():
 
 
 def read_question_answers():
-    with open("../datasets/ARAGOG/eval_questions.json", "r") as f:
+    with open("datasets/ARAGOG/eval_questions.json", "r") as f:
         data = json.load(f)
         questions = data["questions"]
         answers = data["ground_truths"]
@@ -69,7 +69,6 @@ def run_basic_rag(doc_store, sample_questions, sample_answers):
         "context_relevance": context_relevance.run(sample_questions, retrieved_contexts),
         "faithfulness": faithfulness.run(sample_questions, retrieved_contexts, predicted_answers),
         "sas": sas.run(predicted_answers, sample_answers),
-        'predicted_answers': predicted_answers,
     }
     inputs = {'questions': sample_questions, "true_answers": sample_answers, "predicted_answers": predicted_answers}
 
@@ -93,7 +92,6 @@ def run_hyde_rag(doc_store, sample_questions, sample_answers):
     sas = SASEvaluator(model=embedding_model)
     sas.warm_up()
     results = {
-        'predicted_answers': predicted_answers,
         "context_relevance": context_relevance.run(sample_questions, retrieved_contexts),
         "faithfulness": faithfulness.run(sample_questions, retrieved_contexts, predicted_answers),
         "sas": sas.run(predicted_answers, sample_answers)
