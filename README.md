@@ -1,13 +1,11 @@
 # haystack-evaluation
 Using Haystack to benchmark different RAG architectures over different datasets
 
-
 Use evaluation on the selected datasets to optimise some parameters commonly tweaked in RAG pipelines:
 
 - top_k
 - chunk_size
 - embedding model
-
 
 goal number 1 is to give user practical guidance on what techniques to try out on their dataset/use case
 

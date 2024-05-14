@@ -16,7 +16,7 @@ from tqdm import tqdm
 from architectures.basic_rag import basic_rag
 
 embedding_model = "sentence-transformers/all-MiniLM-L6-v2"
-files_path = "datasets/MiniESGBench/"
+files_path = "datasets/BraintrustCodaHelpDesk/"
 
 
 def indexing():
