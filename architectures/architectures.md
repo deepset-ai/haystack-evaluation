@@ -3,7 +3,7 @@
 
 ## Baseline: simple RAG
 
-This is the baseline RAG technique, that uses the retriever to retrieve the top-k documents and then uses 
+This is the baseline RAG technique, that retrieves the top-k documents and then uses 
 the generator to generate the answer. 
 
 TODO: add image with the architecture/pipeline

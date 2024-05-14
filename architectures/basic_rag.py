@@ -8,7 +8,7 @@ from haystack.components.retrievers import InMemoryEmbeddingRetriever
 def basic_rag(document_store, embedding_model, top_k=2):
     template = """
         You have to answer the following question based on the given context information only.
-        If the context is empty or just a '\n' answer "I don't know".
+        If the context is empty or just a '\n' answer with an empty string, example: "".
 
         Context:
         {% for document in documents %}

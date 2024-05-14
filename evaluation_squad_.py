@@ -195,6 +195,7 @@ def main():
     all_questions, documents = load_transformed_squad()
     doc_store = indexing(documents)
 
+    random.seed(42)
     limit = 10
     samples = random.sample(all_questions, limit)
 

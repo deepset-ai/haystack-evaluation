@@ -1,5 +1,6 @@
 import json
 import os
+from typing import Tuple, List
 
 from haystack import Pipeline
 from haystack.components.embedders import SentenceTransformersDocumentEmbedder
@@ -16,16 +17,15 @@ from tqdm import tqdm
 from architectures.basic_rag import basic_rag
 from architectures.hyde_rag import rag_with_hyde
 
-embedding_model = "sentence-transformers/all-MiniLM-L6-v2"
 files_path = "datasets/ARAGOG/papers_for_questions"
 
 
-def indexing():
+def indexing(embedding_model: str, chunk_size: int):
     document_store = InMemoryDocumentStore()
     pipeline = Pipeline()
     pipeline.add_component("converter", PyPDFToDocument())
     pipeline.add_component("cleaner", DocumentCleaner())
-    pipeline.add_component("splitter", DocumentSplitter(split_by="sentence", split_length=256))
+    pipeline.add_component("splitter", DocumentSplitter(split_by="sentence", split_length=chunk_size))
     pipeline.add_component("writer", DocumentWriter(document_store=document_store, policy=DuplicatePolicy.SKIP))
     pipeline.add_component("embedder", SentenceTransformersDocumentEmbedder(embedding_model))
     pipeline.connect("converter", "cleaner")
@@ -38,7 +38,7 @@ def indexing():
     return document_store
 
 
-def read_question_answers():
+def read_question_answers() -> Tuple[List[str], List[str]]:
     with open("datasets/ARAGOG/eval_questions.json", "r") as f:
         data = json.load(f)
         questions = data["questions"]
@@ -46,12 +46,12 @@ def read_question_answers():
     return questions, answers
 
 
-def run_basic_rag(doc_store, sample_questions, sample_answers):
+def run_basic_rag(doc_store, sample_questions, sample_answers, embedding_model, top_k):
     """
     A function to run the basic rag model on a set of sample questions and answers
     """
 
-    rag = basic_rag(document_store=doc_store, embedding_model=embedding_model, top_k=3)
+    rag = basic_rag(document_store=doc_store, embedding_model=embedding_model, top_k=top_k)
 
     predicted_answers = []
     retrieved_contexts = []
@@ -72,7 +72,8 @@ def run_basic_rag(doc_store, sample_questions, sample_answers):
     }
     inputs = {'questions': sample_questions, "true_answers": sample_answers, "predicted_answers": predicted_answers}
 
-    return EvaluationRunResult(run_name="basic_rag", inputs=inputs, results=results)
+    name_params = "f{embedding_model}_top_k:{top_k}_chunk_size:{chunk_size}"
+    return EvaluationRunResult(run_name=name_params, inputs=inputs, results=results)
 
 
 def run_hyde_rag(doc_store, sample_questions, sample_answers):
@@ -101,14 +102,26 @@ def run_hyde_rag(doc_store, sample_questions, sample_answers):
     return EvaluationRunResult(run_name="hyde_rag", inputs=inputs, results=results)
 
 
+def parameter_tuning(questions, answers):
+    """
+    Run the basic RAG model with different parameters, and evaluate the results.
+
+    The parameters to be tuned are: embedding model, top_k, and chunk_size.
+    """
+    embedding_models = {
+        "sentence-transformers/all-MiniLM-L6-v2",
+        "sentence-transformers/msmarco-distilroberta-base-v2",
+        "sentence-transformers/all-mpnet-base-v2"
+    }
+    top_k_values = [1, 3, 5]
+    chunk_sizes = [64, 128, 256]
+
+    for embedding_model in embedding_models:
+        for top_k in top_k_values:
+            for chunk_size in chunk_sizes:
+                doc_store = indexing(embedding_model, chunk_size)
+                basic_rag_results = run_basic_rag(doc_store, questions, answers, embedding_model, top_k)
+
+
 def main():
-    doc_store = indexing()
-    questions, ground_truth_answers = read_question_answers()
-    limit = 5
-    sample_questions = questions[0:limit]
-    sample_ground_truth_answers = ground_truth_answers[0:limit]
-
-    basic_rag_results = run_basic_rag(doc_store, sample_questions, sample_ground_truth_answers)
-    hyde_rag_results = run_hyde_rag(doc_store, sample_questions, sample_ground_truth_answers)
-
-    comparative_df = basic_rag_results.comparative_individual_scores_report(hyde_rag_results)
+    pass
