@@ -2,6 +2,8 @@ import json
 import os
 from typing import Tuple, List
 
+from openai import BadRequestError
+
 from haystack import Pipeline
 from haystack.components.embedders import SentenceTransformersDocumentEmbedder
 from haystack.document_stores.in_memory import InMemoryDocumentStore
@@ -16,6 +18,7 @@ from tqdm import tqdm
 
 from architectures.basic_rag import basic_rag
 from architectures.hyde_rag import rag_with_hyde
+from utils import timeit
 
 files_path = "datasets/ARAGOG/papers_for_questions"
 
@@ -46,7 +49,7 @@ def read_question_answers() -> Tuple[List[str], List[str]]:
     return questions, answers
 
 
-def run_basic_rag(doc_store, sample_questions, sample_answers, embedding_model, top_k):
+def run_basic_rag(doc_store, sample_questions, embedding_model, top_k):
     """
     A function to run the basic rag model on a set of sample questions and answers
     """
@@ -56,27 +59,21 @@ def run_basic_rag(doc_store, sample_questions, sample_answers, embedding_model, 
     predicted_answers = []
     retrieved_contexts = []
     for q in tqdm(sample_questions):
-        response = rag.run(
-            data={"query_embedder": {"text": q}, "prompt_builder": {"question": q}, "answer_builder": {"query": q}})
-        predicted_answers.append(response["answer_builder"]["answers"][0].data)
-        retrieved_contexts.append([d.content for d in response['answer_builder']['answers'][0].documents])
+        try:
+            response = rag.run(
+                data={"query_embedder": {"text": q}, "prompt_builder": {"question": q}, "answer_builder": {"query": q}})
+            predicted_answers.append(response["answer_builder"]["answers"][0].data)
+            retrieved_contexts.append([d.content for d in response['answer_builder']['answers'][0].documents])
+        except BadRequestError as e:
+            print(f"Error with question: {q}")
+            print(e)
+            predicted_answers.append("error")
+            retrieved_contexts.append(retrieved_contexts)
 
-    context_relevance = ContextRelevanceEvaluator()
-    faithfulness = FaithfulnessEvaluator()
-    sas = SASEvaluator(model=embedding_model)
-    sas.warm_up()
-    results = {
-        "context_relevance": context_relevance.run(sample_questions, retrieved_contexts),
-        "faithfulness": faithfulness.run(sample_questions, retrieved_contexts, predicted_answers),
-        "sas": sas.run(predicted_answers, sample_answers),
-    }
-    inputs = {'questions': sample_questions, "true_answers": sample_answers, "predicted_answers": predicted_answers}
-
-    name_params = "f{embedding_model}_top_k:{top_k}_chunk_size:{chunk_size}"
-    return EvaluationRunResult(run_name=name_params, inputs=inputs, results=results)
+    return retrieved_contexts, predicted_answers
 
 
-def run_hyde_rag(doc_store, sample_questions, sample_answers):
+def run_hyde_rag(doc_store, sample_questions, sample_answers, embedding_model):
 
     hyde_rag = rag_with_hyde(document_store=doc_store, embedding_model=embedding_model, top_k=3)
 
@@ -102,6 +99,24 @@ def run_hyde_rag(doc_store, sample_questions, sample_answers):
     return EvaluationRunResult(run_name="hyde_rag", inputs=inputs, results=results)
 
 
+@timeit
+def run_evaluation(sample_questions, sample_answers, retrieved_contexts, predicted_answers, embedding_model):
+    context_relevance = ContextRelevanceEvaluator()
+    faithfulness = FaithfulnessEvaluator()
+    sas = SASEvaluator(model=embedding_model)
+    sas.warm_up()
+
+    results = {
+        "context_relevance": context_relevance.run(sample_questions, retrieved_contexts),
+        "faithfulness": faithfulness.run(sample_questions, retrieved_contexts, predicted_answers),
+        "sas": sas.run(predicted_answers, sample_answers),
+    }
+
+    inputs = {'questions': sample_questions, "true_answers": sample_answers, "predicted_answers": predicted_answers}
+
+    return results, inputs
+
+
 def parameter_tuning(questions, answers):
     """
     Run the basic RAG model with different parameters, and evaluate the results.
@@ -109,9 +124,9 @@ def parameter_tuning(questions, answers):
     The parameters to be tuned are: embedding model, top_k, and chunk_size.
     """
     embedding_models = {
-        "sentence-transformers/all-MiniLM-L6-v2",
+        # "sentence-transformers/all-MiniLM-L6-v2",
         "sentence-transformers/msmarco-distilroberta-base-v2",
-        "sentence-transformers/all-mpnet-base-v2"
+        # "sentence-transformers/all-mpnet-base-v2"
     }
     top_k_values = [1, 3, 5]
     chunk_sizes = [64, 128, 256]
@@ -119,9 +134,39 @@ def parameter_tuning(questions, answers):
     for embedding_model in embedding_models:
         for top_k in top_k_values:
             for chunk_size in chunk_sizes:
+                if top_k == 1 and chunk_size == 64 and embedding_model:
+                    print("skipping")
+                    continue
+
+                if top_k == 1 and chunk_size == 128 and embedding_model:
+                    print("skipping")
+                    continue
+
+                if top_k == 1 and chunk_size == 256 and embedding_model:
+                    print("skipping")
+                    continue
+
+                if top_k == 3 and chunk_size == 64 and embedding_model:
+                    print("skipping")
+                    continue
+
+                if top_k == 3 and chunk_size == 128 and embedding_model:
+                    print("skipping")
+                    continue
+
+                print("Indexing documents")
                 doc_store = indexing(embedding_model, chunk_size)
-                basic_rag_results = run_basic_rag(doc_store, questions, answers, embedding_model, top_k)
+                print(f"top_k={top_k}, chunk_size={chunk_size} model={embedding_model}")
+                print("Running RAG pipeline")
+                retrieved_contexts, predicted_answers = run_basic_rag(doc_store, questions, embedding_model, top_k)
+                print(f"Running evaluation")
+                results, inputs = run_evaluation(questions, answers, retrieved_contexts, predicted_answers, embedding_model)
+                name_params = f"{embedding_model.split('/')[-1]}__top_k:{top_k}__chunk_size:{chunk_size}"
+                eval_results = EvaluationRunResult(run_name=name_params, inputs=inputs, results=results)
+                eval_results.score_report().to_csv(f"score_report_{name_params}.csv")
+                eval_results.to_pandas().to_csv(f"detailed_{name_params}.csv")
 
 
 def main():
-    pass
+
+    questions, answers = read_question_answers()
