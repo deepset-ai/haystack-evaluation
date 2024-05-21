@@ -1,6 +1,7 @@
 import json
 import os
 from typing import Tuple, List
+from warnings import warn
 
 from openai import BadRequestError
 
@@ -103,8 +104,8 @@ def run_hyde_rag(doc_store, sample_questions, sample_answers, embedding_model):
 
 @timeit
 def run_evaluation(sample_questions, sample_answers, retrieved_contexts, predicted_answers, embedding_model):
-    context_relevance = ContextRelevanceEvaluator()
-    faithfulness = FaithfulnessEvaluator()
+    context_relevance = ContextRelevanceEvaluator(raise_on_failure=False)
+    faithfulness = FaithfulnessEvaluator(raise_on_failure=False)
     sas = SASEvaluator(model=embedding_model)
     sas.warm_up()
 
@@ -136,6 +137,13 @@ def parameter_tuning(questions, answers):
     for embedding_model in embedding_models:
         for top_k in top_k_values:
             for chunk_size in chunk_sizes:
+                name_params = f"{embedding_model.split('/')[-1]}__top_k:{top_k}__chunk_size:{chunk_size}"
+                if top_k == 1 or top_k == 3:
+                    print(f"skipping {name_params}")
+                    continue
+                if top_k == 5 and chunk_size == 64:
+                    print(f"skipping {name_params}")
+                    continue
                 print("Indexing documents")
                 doc_store = indexing(embedding_model, chunk_size)
                 print(f"top_k={top_k}, chunk_size={chunk_size} model={embedding_model}")
@@ -150,5 +158,8 @@ def parameter_tuning(questions, answers):
 
 
 def main():
-
     questions, answers = read_question_answers()
+    parameter_tuning(questions, answers)
+
+if __name__ == '__main__':
+    main()
