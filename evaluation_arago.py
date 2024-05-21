@@ -23,6 +23,7 @@ from utils import timeit
 files_path = "datasets/ARAGOG/papers_for_questions"
 
 
+@timeit
 def indexing(embedding_model: str, chunk_size: int):
     document_store = InMemoryDocumentStore()
     pipeline = Pipeline()
@@ -49,6 +50,7 @@ def read_question_answers() -> Tuple[List[str], List[str]]:
     return questions, answers
 
 
+@timeit
 def run_basic_rag(doc_store, sample_questions, embedding_model, top_k):
     """
     A function to run the basic rag model on a set of sample questions and answers
@@ -125,8 +127,8 @@ def parameter_tuning(questions, answers):
     """
     embedding_models = {
         # "sentence-transformers/all-MiniLM-L6-v2",
-        "sentence-transformers/msmarco-distilroberta-base-v2",
-        # "sentence-transformers/all-mpnet-base-v2"
+        # "sentence-transformers/msmarco-distilroberta-base-v2",
+        "sentence-transformers/all-mpnet-base-v2"
     }
     top_k_values = [1, 3, 5]
     chunk_sizes = [64, 128, 256]
@@ -134,26 +136,6 @@ def parameter_tuning(questions, answers):
     for embedding_model in embedding_models:
         for top_k in top_k_values:
             for chunk_size in chunk_sizes:
-                if top_k == 1 and chunk_size == 64 and embedding_model:
-                    print("skipping")
-                    continue
-
-                if top_k == 1 and chunk_size == 128 and embedding_model:
-                    print("skipping")
-                    continue
-
-                if top_k == 1 and chunk_size == 256 and embedding_model:
-                    print("skipping")
-                    continue
-
-                if top_k == 3 and chunk_size == 64 and embedding_model:
-                    print("skipping")
-                    continue
-
-                if top_k == 3 and chunk_size == 128 and embedding_model:
-                    print("skipping")
-                    continue
-
                 print("Indexing documents")
                 doc_store = indexing(embedding_model, chunk_size)
                 print(f"top_k={top_k}, chunk_size={chunk_size} model={embedding_model}")
