@@ -1,7 +1,6 @@
 import json
 import os
 from typing import Tuple, List
-from warnings import warn
 
 from openai import BadRequestError
 
@@ -127,8 +126,8 @@ def parameter_tuning(questions, answers):
     The parameters to be tuned are: embedding model, top_k, and chunk_size.
     """
     embedding_models = {
-        # "sentence-transformers/all-MiniLM-L6-v2",
-        # "sentence-transformers/msmarco-distilroberta-base-v2",
+        "sentence-transformers/all-MiniLM-L6-v2",
+        "sentence-transformers/msmarco-distilroberta-base-v2",
         "sentence-transformers/all-mpnet-base-v2"
     }
     top_k_values = [1, 3, 5]
@@ -138,12 +137,6 @@ def parameter_tuning(questions, answers):
         for top_k in top_k_values:
             for chunk_size in chunk_sizes:
                 name_params = f"{embedding_model.split('/')[-1]}__top_k:{top_k}__chunk_size:{chunk_size}"
-                if top_k == 1 or top_k == 3:
-                    print(f"skipping {name_params}")
-                    continue
-                if top_k == 5 and chunk_size == 64:
-                    print(f"skipping {name_params}")
-                    continue
                 print("Indexing documents")
                 doc_store = indexing(embedding_model, chunk_size)
                 print(f"top_k={top_k}, chunk_size={chunk_size} model={embedding_model}")
@@ -160,6 +153,7 @@ def parameter_tuning(questions, answers):
 def main():
     questions, answers = read_question_answers()
     parameter_tuning(questions, answers)
+
 
 if __name__ == '__main__':
     main()
