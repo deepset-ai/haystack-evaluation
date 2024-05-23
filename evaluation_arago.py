@@ -1,5 +1,6 @@
 import json
 import os
+from pathlib import Path
 from typing import Tuple, List
 
 from openai import BadRequestError
@@ -9,8 +10,7 @@ from haystack.components.embedders import SentenceTransformersDocumentEmbedder
 from haystack.document_stores.in_memory import InMemoryDocumentStore
 from haystack.components.converters import PyPDFToDocument
 from haystack.components.evaluators import ContextRelevanceEvaluator, FaithfulnessEvaluator, SASEvaluator
-from haystack.components.preprocessors import DocumentCleaner
-from haystack.components.preprocessors import DocumentSplitter
+from haystack.components.preprocessors import DocumentCleaner, DocumentSplitter
 from haystack.components.writers import DocumentWriter
 from haystack.document_stores.types import DuplicatePolicy
 from haystack.evaluation import EvaluationRunResult
@@ -133,6 +133,10 @@ def parameter_tuning(questions, answers):
     top_k_values = [1, 2, 3]
     chunk_sizes = [64, 128, 256]
 
+    # create results directory if it does not exist using Pathlib
+    out_path = Path("aragog_results")
+    out_path.mkdir(exist_ok=True)
+
     for embedding_model in embedding_models:
         for top_k in top_k_values:
             for chunk_size in chunk_sizes:
@@ -145,8 +149,8 @@ def parameter_tuning(questions, answers):
                 print(f"Running evaluation")
                 results, inputs = run_evaluation(questions, answers, retrieved_contexts, predicted_answers, embedding_model)
                 eval_results = EvaluationRunResult(run_name=name_params, inputs=inputs, results=results)
-                eval_results.score_report().to_csv(f"score_report_{name_params}.csv")
-                eval_results.to_pandas().to_csv(f"detailed_{name_params}.csv")
+                eval_results.score_report().to_csv(f"{out_path}/score_report_{name_params}.csv")
+                eval_results.to_pandas().to_csv(f"{out_path}/detailed_{name_params}.csv")
 
 
 def main():
