@@ -47,7 +47,7 @@ def load_transformed_squad():
 
 def indexing(documents, embedding_model, chunk_size):
     document_store = InMemoryDocumentStore()
-    doc_splitter = DocumentSplitter(split_length=chunk_size)
+    doc_splitter = DocumentSplitter(split_by="sentence", split_length=chunk_size)
     doc_writer = DocumentWriter(document_store=document_store, policy=DuplicatePolicy.SKIP)
     doc_embedder = SentenceTransformersDocumentEmbedder(model=embedding_model)
     ingestion_pipe = Pipeline()
@@ -117,24 +117,6 @@ def run_evaluation(embedding_model, ground_truth_docs, retrieved_docs, questions
 
     return EvaluationRunResult(run_name="basic_rag", inputs=inputs, results=results)
 
-"""
-def run_evaluation(sample_questions, sample_answers, retrieved_contexts, predicted_answers, embedding_model):
-    context_relevance = ContextRelevanceEvaluator(raise_on_failure=False)
-    faithfulness = FaithfulnessEvaluator(raise_on_failure=False)
-    sas = SASEvaluator(model=embedding_model)
-    sas.warm_up()
-
-    results = {
-        "context_relevance": context_relevance.run(sample_questions, retrieved_contexts),
-        "faithfulness": faithfulness.run(sample_questions, retrieved_contexts, predicted_answers),
-        "sas": sas.run(predicted_answers, sample_answers),
-    }
-
-    inputs = {'questions': sample_questions, "true_answers": sample_answers, "predicted_answers": predicted_answers}
-
-    return results, inputs
-"""
-
 
 def parameter_tuning(queries, documents):
     """
@@ -148,7 +130,7 @@ def parameter_tuning(queries, documents):
         "sentence-transformers/all-mpnet-base-v2"
     }
     top_k_values = [1, 2, 3]
-    chunk_sizes = [64, 128, 256]
+    chunk_sizes = [5, 10, 15]
 
     # create results directory if it does not exist using Pathlib
     out_path = Path("squad_results")
