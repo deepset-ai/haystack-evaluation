@@ -17,19 +17,17 @@ from haystack.evaluation import EvaluationRunResult
 from tqdm import tqdm
 
 from architectures.basic_rag import basic_rag
-from architectures.hyde_rag import rag_with_hyde
 from utils import timeit
-
-files_path = "datasets/ARAGOG/papers_for_questions"
 
 
 @timeit
 def indexing(embedding_model: str, chunk_size: int):
+    files_path = "datasets/ARAGOG/papers_for_questions"
     document_store = InMemoryDocumentStore()
     pipeline = Pipeline()
     pipeline.add_component("converter", PyPDFToDocument())
     pipeline.add_component("cleaner", DocumentCleaner())
-    pipeline.add_component("splitter", DocumentSplitter(split_by="sentence", split_length=chunk_size))
+    pipeline.add_component("splitter", DocumentSplitter(split_length=chunk_size))  # splitting by word
     pipeline.add_component("writer", DocumentWriter(document_store=document_store, policy=DuplicatePolicy.SKIP))
     pipeline.add_component("embedder", SentenceTransformersDocumentEmbedder(embedding_model))
     pipeline.connect("converter", "cleaner")
@@ -75,32 +73,6 @@ def run_basic_rag(doc_store, sample_questions, embedding_model, top_k):
     return retrieved_contexts, predicted_answers
 
 
-def run_hyde_rag(doc_store, sample_questions, sample_answers, embedding_model):
-
-    hyde_rag = rag_with_hyde(document_store=doc_store, embedding_model=embedding_model, top_k=3)
-
-    predicted_answers = []
-    retrieved_contexts = []
-    for q in tqdm(sample_questions):
-        response = hyde_rag.run(
-            data={"hyde": {"query": q}, "prompt_builder": {"question": q}, "answer_builder": {"query": q}})
-        predicted_answers.append(response["answer_builder"]["answers"][0].data)
-        retrieved_contexts.append([d.content for d in response['answer_builder']['answers'][0].documents])
-
-    context_relevance = ContextRelevanceEvaluator()
-    faithfulness = FaithfulnessEvaluator()
-    sas = SASEvaluator(model=embedding_model)
-    sas.warm_up()
-    results = {
-        "context_relevance": context_relevance.run(sample_questions, retrieved_contexts),
-        "faithfulness": faithfulness.run(sample_questions, retrieved_contexts, predicted_answers),
-        "sas": sas.run(predicted_answers, sample_answers)
-    }
-    inputs = {'questions': sample_questions, "true_answers": sample_answers, "predicted_answers": predicted_answers}
-
-    return EvaluationRunResult(run_name="hyde_rag", inputs=inputs, results=results)
-
-
 @timeit
 def run_evaluation(sample_questions, sample_answers, retrieved_contexts, predicted_answers, embedding_model):
     context_relevance = ContextRelevanceEvaluator(raise_on_failure=False)
@@ -134,7 +106,7 @@ def parameter_tuning(questions, answers):
     chunk_sizes = [64, 128, 256]
 
     # create results directory if it does not exist using Pathlib
-    out_path = Path("aragog_results")
+    out_path = Path("old_bug_aragog_results")
     out_path.mkdir(exist_ok=True)
 
     for embedding_model in embedding_models:
