@@ -130,21 +130,20 @@ def parameter_tuning(questions, answers):
         "sentence-transformers/msmarco-distilroberta-base-v2",
         "sentence-transformers/all-mpnet-base-v2"
     }
-    top_k_values = [1, 3, 5]
+    top_k_values = [1, 2, 3]
     chunk_sizes = [64, 128, 256]
 
     for embedding_model in embedding_models:
         for top_k in top_k_values:
             for chunk_size in chunk_sizes:
                 name_params = f"{embedding_model.split('/')[-1]}__top_k:{top_k}__chunk_size:{chunk_size}"
+                print(name_params)
                 print("Indexing documents")
                 doc_store = indexing(embedding_model, chunk_size)
-                print(f"top_k={top_k}, chunk_size={chunk_size} model={embedding_model}")
                 print("Running RAG pipeline")
                 retrieved_contexts, predicted_answers = run_basic_rag(doc_store, questions, embedding_model, top_k)
                 print(f"Running evaluation")
                 results, inputs = run_evaluation(questions, answers, retrieved_contexts, predicted_answers, embedding_model)
-                name_params = f"{embedding_model.split('/')[-1]}__top_k:{top_k}__chunk_size:{chunk_size}"
                 eval_results = EvaluationRunResult(run_name=name_params, inputs=inputs, results=results)
                 eval_results.score_report().to_csv(f"score_report_{name_params}.csv")
                 eval_results.to_pandas().to_csv(f"detailed_{name_params}.csv")

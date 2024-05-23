@@ -1,2 +1,6 @@
 # haystack-evaluation
-Use cases of using Haystack to build different RAG architectures over different datasets, and evaluate the performance. 
+
+This repository contains examples on how to use Haystack to build different RAG architectures over different datasets, and evaluate the performance.
+
+- [RAG Techniques/Architectures](architectures/README.md)
+- [Datasets](datasets/README.md)
