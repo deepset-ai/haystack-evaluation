@@ -106,7 +106,7 @@ def parameter_tuning(questions, answers):
     chunk_sizes = [64, 128, 256]
 
     # create results directory if it does not exist using Pathlib
-    out_path = Path("old_bug_aragog_results")
+    out_path = Path("aragog_results")
     out_path.mkdir(exist_ok=True)
 
     for embedding_model in embedding_models:

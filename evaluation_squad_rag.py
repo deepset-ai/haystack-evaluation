@@ -94,14 +94,24 @@ def run_evaluation(embedding_model, ground_truth_docs, retrieved_docs, questions
     eval_pipeline.add_component("answer_exact", AnswerExactMatchEvaluator())
     eval_pipeline.add_component("sas", SASEvaluator(model=embedding_model))
 
+    # get the original documents from the retrieved documents which were split
+    original_retrieved_docs = []
+    for doc in retrieved_docs:
+        original_docs = []
+        for split_doc in doc:
+            for original_doc in ground_truth_docs:
+                if split_doc.meta["name"] == original_doc[0].meta["name"]:
+                    original_docs.append(original_doc[0])
+        original_retrieved_docs.append(original_docs)
+
     eval_pipeline_results = eval_pipeline.run(
         {
-            "doc_mrr": {"ground_truth_documents": ground_truth_docs, "retrieved_documents": retrieved_docs},
+            "doc_mrr": {"ground_truth_documents": ground_truth_docs, "retrieved_documents": original_retrieved_docs},
             "sas": {"predicted_answers": predicted_answers, "ground_truth_answers": ground_truth_answers},
             "answer_exact": {"predicted_answers": predicted_answers, "ground_truth_answers": ground_truth_answers},
-            "doc_map": {"ground_truth_documents": ground_truth_docs, "retrieved_documents": retrieved_docs},
-            "doc_recall_single_hit": {"ground_truth_documents": ground_truth_docs, "retrieved_documents": retrieved_docs},
-            "doc_recall_multi_hit": {"ground_truth_documents": ground_truth_docs, "retrieved_documents": retrieved_docs}
+            "doc_map": {"ground_truth_documents": ground_truth_docs, "retrieved_documents": original_retrieved_docs},
+            "doc_recall_single_hit": {"ground_truth_documents": ground_truth_docs, "retrieved_documents": original_retrieved_docs},
+            "doc_recall_multi_hit": {"ground_truth_documents": ground_truth_docs, "retrieved_documents": original_retrieved_docs}
         }
     )
 
@@ -115,7 +125,7 @@ def run_evaluation(embedding_model, ground_truth_docs, retrieved_docs, questions
 
     inputs = {'questions': questions, 'true_answers': ground_truth_answers, 'predicted_answers': predicted_answers}
 
-    return EvaluationRunResult(run_name="basic_rag", inputs=inputs, results=results)
+    return results, inputs
 
 
 def parameter_tuning(queries, documents):
@@ -138,10 +148,11 @@ def parameter_tuning(queries, documents):
 
     questions = []
     ground_truth_answers = []
+    ground_truth_docs = []
     for sample in queries:
         questions.append(sample["question"])
-        ground_truth_answers.append(sample["answers"]["text"])
-        ground_truth_docs = [doc for doc in documents if doc.meta["name"] == sample["document"]]
+        ground_truth_answers.append(sample["answers"]["text"][0])
+        ground_truth_docs.append([doc for doc in documents if doc.meta["name"] == sample["document"]])
 
     for embedding_model in embedding_models:
         for top_k in top_k_values:
@@ -151,9 +162,14 @@ def parameter_tuning(queries, documents):
                 print("Indexing documents")
                 doc_store = indexing(documents, embedding_model, chunk_size)
                 print("Running RAG pipeline")
-                retrieved_docs, predicted_answers, retrieved_contexts = run_basic_rag(doc_store, questions, embedding_model, top_k)
+                retrieved_docs, predicted_answers, retrieved_contexts = run_basic_rag(
+                    doc_store, questions, embedding_model, top_k
+                )
                 print(f"Running evaluation")
-                results, inputs = run_evaluation(embedding_model, ground_truth_docs, retrieved_docs, questions, predicted_answers, ground_truth_answers)
+                results, inputs = run_evaluation(
+                    embedding_model, ground_truth_docs, retrieved_docs, questions, predicted_answers,
+                    ground_truth_answers
+                )
                 eval_results = EvaluationRunResult(run_name=name_params, inputs=inputs, results=results)
                 eval_results.score_report().to_csv(f"{out_path}/score_report_{name_params}.csv")
                 eval_results.to_pandas().to_csv(f"{out_path}/detailed_{name_params}.csv")
