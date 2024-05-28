@@ -20,7 +20,7 @@ from haystack.document_stores.types import DuplicatePolicy
 from haystack.evaluation import EvaluationRunResult
 from tqdm import tqdm
 
-from architectures.basic_rag import basic_rag
+from architectures.extractive_qa import get_extractive_qa_pipeline
 
 base_path = "datasets/SQuAD-2.0/transformed_squad/"
 
@@ -60,28 +60,26 @@ def indexing(documents, embedding_model, chunk_size):
     return document_store
 
 
-def run_basic_rag(doc_store, questions, embedding_model, top_k):
+def run_extractive_qa(doc_store, questions, embedding_model, top_k_retriever):
 
-    rag = basic_rag(document_store=doc_store, embedding_model=embedding_model, top_k=top_k)
+    extractive_qa = get_extractive_qa_pipeline(
+        document_store=doc_store,
+        embedding_model=embedding_model,
+        top_k_retriever=top_k_retriever,
+    )
 
     # predicted data
     retrieved_docs = []
-    retrieved_contexts = []
     predicted_answers = []
 
     for q in tqdm(questions):
-        response = rag.run(
-            data={"query_embedder": {"text": q},
-                  "prompt_builder": {"question": q},
-                  "answer_builder": {"query": q}}
+        response = extractive_qa.run(
+            data={"embedder": {"text": q}, "retriever": {"top_k": top_k_retriever}, "reader": {"query": q, "top_k": 1}}
         )
+        retrieved_docs.append([answer.document for answer in response['reader']['answers']])
+        predicted_answers.append(response['reader']['answers'][0].data)
 
-        # gather response data
-        retrieved_docs.append(response["answer_builder"]["answers"][0].documents)
-        retrieved_contexts.append([doc.content for doc in response["answer_builder"]["answers"][0].documents])
-        predicted_answers.append(response["answer_builder"]["answers"][0].data)
-
-    return retrieved_docs, predicted_answers, retrieved_contexts
+    return retrieved_docs, predicted_answers
 
 
 def run_evaluation(embedding_model, ground_truth_docs, retrieved_docs, questions, predicted_answers, ground_truth_answers):
@@ -142,8 +140,8 @@ def parameter_tuning(queries, documents):
     chunk_sizes = [5, 10, 15]
 
     # create results directory if it does not exist using Pathlib
-    out_path = Path("squad_results")
-    out_path.mkdir(exist_ok=True)
+    # out_path = Path("squad_results")
+    # out_path.mkdir(exist_ok=True)
 
     questions = []
     ground_truth_answers = []
@@ -161,17 +159,15 @@ def parameter_tuning(queries, documents):
                 print("Indexing documents")
                 doc_store = indexing(documents, embedding_model, chunk_size)
                 print("Running RAG pipeline")
-                retrieved_docs, predicted_answers, retrieved_contexts = run_basic_rag(
-                    doc_store, questions, embedding_model, top_k
-                )
+                retrieved_docs, predicted_answers = run_extractive_qa(doc_store, questions, embedding_model, top_k)
                 print(f"Running evaluation")
                 results, inputs = run_evaluation(
                     embedding_model, ground_truth_docs, retrieved_docs, questions, predicted_answers,
                     ground_truth_answers
                 )
                 eval_results = EvaluationRunResult(run_name=name_params, inputs=inputs, results=results)
-                eval_results.score_report().to_csv(f"{out_path}/score_report_{name_params}.csv")
-                eval_results.to_pandas().to_csv(f"{out_path}/detailed_{name_params}.csv")
+                # eval_results.score_report().to_csv(f"{out_path}/score_report_{name_params}.csv")
+                # eval_results.to_pandas().to_csv(f"{out_path}/detailed_{name_params}.csv")
 
 
 def main():

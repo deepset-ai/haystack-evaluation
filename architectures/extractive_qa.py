@@ -4,10 +4,20 @@ from haystack.components.readers import ExtractiveReader
 from haystack.components.embedders import SentenceTransformersTextEmbedder
 
 
-def get_extractive_qa_pipeline(doc_store, model):
+def get_extractive_qa_pipeline(document_store, embedding_model, top_k_retriever):
+    """
+    An extractive QA pipeline that uses a retriever to find relevant documents for a given question and a reader to
+    extract the answer from these documents.
+    """
+    embedder = SentenceTransformersTextEmbedder(model=embedding_model, progress_bar=False)
+    retriever = InMemoryEmbeddingRetriever(document_store=document_store, top_k=top_k_retriever)
+    reader = ExtractiveReader(top_k=1, no_answer=False)
+
     extractive_qa_pipeline = Pipeline()
-    extractive_qa_pipeline.add_component(instance=SentenceTransformersTextEmbedder(model=model), name="embedder")
-    extractive_qa_pipeline.add_component(instance=InMemoryEmbeddingRetriever(document_store=doc_store), name="retriever")
-    extractive_qa_pipeline.add_component(instance=ExtractiveReader(), name="reader")
+    extractive_qa_pipeline.add_component(instance=embedder, name="embedder")
+    extractive_qa_pipeline.add_component(instance=retriever, name="retriever")
+    extractive_qa_pipeline.add_component(instance=reader, name="reader")
     extractive_qa_pipeline.connect("embedder.embedding", "retriever.query_embedding")
     extractive_qa_pipeline.connect("retriever.documents", "reader.documents")
+
+    return extractive_qa_pipeline
