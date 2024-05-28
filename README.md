@@ -18,7 +18,7 @@ The dataset contains:
 - 13 PDF papers 
 - 107 questions and answers generated with the assistance of GPT-4, and validated/corrected by humans.
 
-- It has human annotations for the following metrics:
+It has human annotations for the following metrics:
 - [ContextRelevance](https://docs.haystack.deepset.ai/docs/contextrelevanceevaluator)
 - [Faithfulness](https://docs.haystack.deepset.ai/docs/faithfulnessevaluator)
 - [Semantic Answer Similarity](https://docs.haystack.deepset.ai/docs/sasevaluator)
@@ -34,7 +34,7 @@ The SQuAD dataset is a collection of questions and answers from Wikipedia articl
 This dataset is typically used for training and evaluating models for extractive question-answering tasks.
 
 The dataset contains:
-- 490 Wikipedia articles
+- 490 Wikipedia articles in text format
 - 98k questions whose answers are spans in the articles
 
 It contains human annotations suitable for the following metrics:
