@@ -23,7 +23,7 @@ It has human annotations for the following metrics:
 - [Faithfulness](https://docs.haystack.deepset.ai/docs/faithfulnessevaluator)
 - [Semantic Answer Similarity](https://docs.haystack.deepset.ai/docs/sasevaluator)
 
-Check the [RAG over ARAGOG dataset notebook](aragog_evaluation.ipynb) for more details.
+Check the [RAG over ARAGOG dataset notebook](aragog_evaluation.ipynb) for an example on how to evaluate a RAG model over this dataset.
 
 
 ---
