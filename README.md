@@ -9,16 +9,16 @@ This repository contains examples on how to use Haystack to build different RAG 
 
 ## Evaluations
 
-### ARAGOG dataset
+### ARAGOG
 
 This dataset is based on the paper [Advanced Retrieval Augmented Generation Output Grading (ARAGOG)](https://arxiv.org/pdf/2404.01037).
-
 It's a collection of papers from ArXiv covering topics around Transformers and Large Language Models, all in PDF format. The dataset contains 13 papers and 107 questions and answers generated with the assistance of GPT-4. Each question-answer pair was validated/corrected by humans.
-
 It has human annotations for the following metrics:
 - [ContextRelevance](https://docs.haystack.deepset.ai/docs/contextrelevanceevaluator)
 - [Faithfulness](https://docs.haystack.deepset.ai/docs/faithfulnessevaluator)
 - [Semantic Answer Similarity](https://docs.haystack.deepset.ai/docs/sasevaluator)
+
+Check the [RAG over ARAGOG dataset notebook](aragog_evaluation.ipynb) for more details.
 
 
 ---

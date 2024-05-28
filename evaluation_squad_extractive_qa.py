@@ -139,9 +139,8 @@ def parameter_tuning(queries, documents):
     top_k_values = [1, 2, 3]
     chunk_sizes = [5, 10, 15]
 
-    # create results directory if it does not exist using Pathlib
-    # out_path = Path("squad_results")
-    # out_path.mkdir(exist_ok=True)
+    out_path = Path("squad_results_extractive_qa/")
+    out_path.mkdir(exist_ok=True)
 
     questions = []
     ground_truth_answers = []
@@ -166,8 +165,8 @@ def parameter_tuning(queries, documents):
                     ground_truth_answers
                 )
                 eval_results = EvaluationRunResult(run_name=name_params, inputs=inputs, results=results)
-                # eval_results.score_report().to_csv(f"{out_path}/score_report_{name_params}.csv")
-                # eval_results.to_pandas().to_csv(f"{out_path}/detailed_{name_params}.csv")
+                eval_results.score_report().to_csv(f"{out_path}/score_report_{name_params}.csv")
+                eval_results.to_pandas().to_csv(f"{out_path}/detailed_{name_params}.csv")
 
 
 def main():
