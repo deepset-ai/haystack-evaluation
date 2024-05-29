@@ -32,17 +32,3 @@ Paper: [Precise Zero-Shot Dense Retrieval without Relevance Labels](https://acla
 ## Maximal Marginal Relevance (MMR) 
 ## Cohere Re-ranker 
 ## LLM-based Re-ranker
-
-
-    # get the original documents from the retrieved documents which were split
-    original_retrieved_docs = []
-    for doc in retrieved_docs:
-        original_docs = []
-        for split_doc in doc:
-            for original_doc in ground_truth_docs:
-                if split_doc.meta["name"] == original_doc[0].meta["name"]:
-                    original_docs.append(original_doc[0])
-        original_retrieved_docs.append(original_docs)
-
-I think it would be benefitical to have a function that does this for us.
-

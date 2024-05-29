@@ -23,7 +23,7 @@ It has human annotations for the following metrics:
 - [Faithfulness](https://docs.haystack.deepset.ai/docs/faithfulnessevaluator)
 - [Semantic Answer Similarity](https://docs.haystack.deepset.ai/docs/sasevaluator)
 
-Check the [RAG over ARAGOG dataset notebook](aragog_evaluation.ipynb) for an example on how to evaluate a RAG model over this dataset.
+Check the [RAG over ARAGOG dataset notebook](aragog_evaluation.ipynb) for an example.
 
 
 ---
@@ -43,3 +43,7 @@ It contains human annotations suitable for the following metrics:
 - [DocumentMAP](https://docs.haystack.deepset.ai/docs/documentmapevaluator)
 - [DocumentRecall](https://docs.haystack.deepset.ai/docs/documentrecallevaluator)
 - [Semantic Answer Similarity](https://docs.haystack.deepset.ai/docs/sasevaluator)
+
+
+Check the [RAG over SQuAD notebook](squad_rag_evaluation.ipynb) for an example.
+Check the [Extractive QA over SQuAD notebook](squad_extractive_qa_evaluation.ipynb) for an example.
