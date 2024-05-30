@@ -1,5 +1,7 @@
+import argparse
 import json
 import os
+import random
 from pathlib import Path
 from typing import Tuple, List
 
@@ -17,12 +19,15 @@ from haystack.evaluation import EvaluationRunResult
 from tqdm import tqdm
 
 from architectures.basic_rag import basic_rag
-from utils import timeit
+from utils.utils import timeit
+
+base_path = "../datasets/ARAGOG/"
 
 
 @timeit
 def indexing(embedding_model: str, chunk_size: int):
-    files_path = "datasets/ARAGOG/papers_for_questions"
+    full_path = Path(base_path)
+    files_path = full_path / "papers_for_questions"
     document_store = InMemoryDocumentStore()
     pipeline = Pipeline()
     pipeline.add_component("converter", PyPDFToDocument())
@@ -34,14 +39,14 @@ def indexing(embedding_model: str, chunk_size: int):
     pipeline.connect("cleaner", "splitter")
     pipeline.connect("splitter", "embedder")
     pipeline.connect("embedder", "writer")
-    pdf_files = [files_path+"/"+f_name for f_name in os.listdir(files_path)]
+    pdf_files = [full_path / "papers_for_questions" / f_name for f_name in os.listdir(files_path)]
     pipeline.run({"converter": {"sources": pdf_files}})
 
     return document_store
 
 
 def read_question_answers() -> Tuple[List[str], List[str]]:
-    with open("datasets/ARAGOG/eval_questions.json", "r") as f:
+    with open (base_path + "eval_questions.json", "r") as f:
         data = json.load(f)
         questions = data["questions"]
         answers = data["ground_truths"]
@@ -75,23 +80,33 @@ def run_basic_rag(doc_store, sample_questions, embedding_model, top_k):
 
 @timeit
 def run_evaluation(sample_questions, sample_answers, retrieved_contexts, predicted_answers, embedding_model):
-    context_relevance = ContextRelevanceEvaluator(raise_on_failure=False)
-    faithfulness = FaithfulnessEvaluator(raise_on_failure=False)
-    sas = SASEvaluator(model=embedding_model)
-    sas.warm_up()
+    eval_pipeline = Pipeline()
+    eval_pipeline.add_component("context_relevance", ContextRelevanceEvaluator(raise_on_failure=False))
+    eval_pipeline.add_component("faithfulness", FaithfulnessEvaluator(raise_on_failure=False))
+    eval_pipeline.add_component("sas", SASEvaluator(model=embedding_model))
+
+    eval_pipeline_results = eval_pipeline.run(
+        {
+            "context_relevance": {"questions": sample_questions, "contexts": retrieved_contexts},
+            "faithfulness": {
+                "questions": sample_questions, "contexts": retrieved_contexts, "predicted_answers": predicted_answers
+            },
+            "sas": {"predicted_answers": predicted_answers, "ground_truth_answers": sample_answers},
+        }
+    )
 
     results = {
-        "context_relevance": context_relevance.run(sample_questions, retrieved_contexts),
-        "faithfulness": faithfulness.run(sample_questions, retrieved_contexts, predicted_answers),
-        "sas": sas.run(predicted_answers, sample_answers),
+        "context_relevance": eval_pipeline_results['context_relevance'],
+        "faithfulness": eval_pipeline_results['faithfulness'],
+        "sas": eval_pipeline_results['sas']
     }
 
-    inputs = {'questions': sample_questions, "true_answers": sample_answers, "predicted_answers": predicted_answers}
+    inputs = {'questions': sample_questions, 'true_answers': sample_answers, 'predicted_answers': predicted_answers}
 
     return results, inputs
 
 
-def parameter_tuning(questions, answers):
+def parameter_tuning(questions, answers, out_path: str):
     """
     Run the basic RAG model with different parameters, and evaluate the results.
 
@@ -106,12 +121,12 @@ def parameter_tuning(questions, answers):
     chunk_sizes = [64, 128, 256]
 
     # create results directory if it does not exist using Pathlib
-    out_path = Path("aragog_results")
+    out_path = Path(out_path)
     out_path.mkdir(exist_ok=True)
 
     for embedding_model in embedding_models:
         for chunk_size in chunk_sizes:
-            print("Indexing documents")
+            print(f"Indexing documents with {embedding_model} model with a chunk_size={chunk_size}")
             doc_store = indexing(embedding_model, chunk_size)
             for top_k in top_k_values:
                 name_params = f"{embedding_model.split('/')[-1]}__top_k:{top_k}__chunk_size:{chunk_size}"
@@ -125,9 +140,28 @@ def parameter_tuning(questions, answers):
                 eval_results.to_pandas().to_csv(f"{out_path}/detailed_{name_params}.csv", index=False)
 
 
+def create_args():
+    parser = argparse.ArgumentParser(description='Run the ARAGOG dataset evaluation on a RAG pipeline')
+    parser.add_argument(
+        '--output_dir',
+        type=str,
+        help='The output directory for the results',
+        required=True
+    )
+    parser.add_argument('--sample', type=int, help='The number of questions to sample')
+    return parser.parse_args()
+
+
 def main():
+    args = create_args()
     questions, answers = read_question_answers()
-    parameter_tuning(questions, answers)
+
+    if args.sample:
+        random.seed(42)
+        questions = random.sample(questions, args.sample)
+        answers = random.sample(answers, args.sample)
+
+    parameter_tuning(questions, answers, args.output_dir)
 
 
 if __name__ == '__main__':
