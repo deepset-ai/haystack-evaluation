@@ -1,0 +1,101 @@
+,questions,true_answers,predicted_answers,doc_mrr,sas,doc_map,doc_recall_single_hit,doc_recall_multi_hit
+0,What poet wrote a long poem describing Roman religious holidays?,Ovid,Ovid wrote a long poem describing Roman religious holidays.,1.0,0.4118220806121826,1.0,1.0,1.0
+1,What is the form of hydrogen and carbon called?,hydrocarbons,The form of hydrogen and carbon is called hydrocarbons.,1.0,0.7120563387870789,1.0,1.0,1.0
+2,What adjective did Lawrence Toppman use to describe Craig's portrayal of James Bond?,Bored,Bored,1.0,1.0,1.0,1.0,1.0
+3,Members of which organizations are disqualified from sitting in the SP as elected MSPs?,police and the armed forces,"Members of the police, armed forces, civil servants, and members of foreign legislatures are disqualified from sitting in the Scottish Parliament as elected MSPs.",1.0,0.21987369656562805,1.0,1.0,1.0
+4,To what two islands does the ferry service connect?,Bainbridge and Vashon,None,0.0,0.23360860347747803,0.0,0.0,0.0
+5,What took the place of Mac's Xserve server?,Mac Mini and Mac Pro,None,1.0,0.07554265856742859,1.0,1.0,1.0
+6,What is one example of an application that videoconferencing manufacturers have begun to offer?,still image streaming,Mobile collaboration systems,1.0,0.15650945901870728,1.0,1.0,1.0
+7,What are Italian dialects termed in the Italian language?,dialetti,"In the Italian language, Italian dialects are often referred to as ""dialetti"".",1.0,0.6523044109344482,1.0,1.0,1.0
+8,What cycle starts with rubisco?,The Calvin cycle,Calvin Cycle,1.0,0.975460410118103,1.0,1.0,1.0
+9,"Along with exhibition and distribution, what business did the Universal Film Manufacturing Company engage in?",movie production,Studio management,1.0,0.43972665071487427,1.0,1.0,1.0
+10,Who was Robert's son?,Bohemond,Governor Thomas Lindall Winthrop,1.0,0.06744123250246048,1.0,1.0,1.0
+11,What words are inscribed on the mace of parliament?,"Wisdom, Compassion, Justice and Integrity","Wisdom, Compassion, Justice and Integrity.",1.0,0.9773526191711426,1.0,1.0,1.0
+12,Whose life was 'Schindler's List' based on?,Oskar Schindler,Oskar Schindler.,1.0,0.9884300231933594,1.0,1.0,1.0
+13,In what presidential election year did Schwarzenegger make a name for himself as a prominent Republican?,1988,None,1.0,0.2188326120376587,1.0,1.0,1.0
+14,What component of the printed circuit board is appraised with boundary scan testing?,ICs,The integrated circuits (ICs) on the board are appraised with boundary scan testing.,1.0,0.4625229239463806,1.0,1.0,1.0
+15,Who had FA cup coverage from 1988-1997?,"From 1988 to 1997, the BBC and Sky Sports had coverage of the FA Cup",The BBC and Sky Sports shared FA Cup coverage from 1988-1997.,1.0,0.9328627586364746,1.0,1.0,1.0
+16,What percentage of the population was Caucasian in 1940?,92%,None,0.0,0.32694679498672485,0.0,0.0,0.0
+17,In what year was Columbia University chartered?,1754,None,0.0,0.2505530118942261,0.0,0.0,0.0
+18,"What is the owner, tenant or manager of a pub known as?",pub landlord,"The owner, tenant or manager of a pub is properly known as the ""pub landlord"".",1.0,0.8141956925392151,1.0,1.0,1.0
+19,How many people signed a petition in protest of Everton FC's crest redesign in 2013?,"over 22,000","Over 22,000 signatures.",1.0,0.5981031656265259,1.0,1.0,1.0
+20,What did Griffith's tool help increase?,transparency,The detection of conflict of interest edits on Wikipedia.,1.0,0.0971030592918396,1.0,1.0,1.0
+21,Where do samurais' teachings live on?,everyday life and in modern Japanese martial arts,Samurais' teachings live on in both everyday life and in modern Japanese martial arts.,1.0,0.7846480011940002,1.0,1.0,1.0
+22,How many years does the term of a Richmond city council representative last?,four,Four years,1.0,0.484598308801651,1.0,1.0,1.0
+23,When did an investigation occur under school casualties?,December 2008,The investigation under school casualties occurred since December 2008.,1.0,0.37979185581207275,0.8333333333333333,1.0,1.0
+24,How did Liang Ji die?,forced to commit suicide,Liang Ji was forced to commit suicide.,1.0,0.5624645352363586,1.0,1.0,1.0
+25,Who supported the reaction against the government?,Durango,None,0.0,0.2675711512565613,0.0,0.0,0.0
+26,Jochi's death occurred in what year?,1226,Jochi's death occurred in 1226.,1.0,0.34507304430007935,1.0,1.0,1.0
+27,What influences role of minority leader?,personality and contextual factors,"The role of the minority leader is influenced by a variety of elements, including personality and contextual factors such as the size and cohesion of the minority party, whether his or her party controls the White House, the general political climate in the House, and the controversy associated with the legislative agenda.",1.0,0.4399459958076477,1.0,1.0,1.0
+28,Did the rainforest managed to thrive during the glacial periods? ,"However, the rainforest still managed to thrive during these glacial periods, allowing for the survival and evolution of a broad diversity of species.",Yes.,1.0,-0.06412816047668457,1.0,1.0,1.0
+29,What genre was 'LA 2017'?,futuristic science fiction,None,0.0,0.08773729205131531,0.0,0.0,0.0
+30,Who had issues with JFK's proposal?,NAACP,Jerome Wiesner had issues with JFK's proposal.,0.0,0.16096802055835724,0.0,0.0,0.0
+31,What does CATOBAR allow for?,deployment of heavy jets with full loadouts,"CATOBAR allows for the deployment of heavy jets with full loadouts, especially on ground-attack missions.",1.0,0.675529956817627,1.0,1.0,1.0
+32,Where were these forts commonly built?,hills,These forts were commonly built along the main branch of the river Rhine as part of the limes Germanicus defense line.,0.0,0.04213682934641838,0.0,0.0,0.0
+33,What bacteria is an exception to single circular chromosome rule?,Spirochaetes of the genus Borrelia,"Borrelia burgdorferi, the cause of Lyme disease, contains a single linear chromosome, making it an exception to the single circular chromosome rule in bacteria.",1.0,0.34633755683898926,1.0,1.0,1.0
+34,Who made up most unions between Europeans and natives?,European men and Indigenous American women,Traders and fur trappers made up most unions between Europeans and natives.,1.0,0.47094297409057617,1.0,1.0,1.0
+35,What did the Guardian name her?,Artist of the Decade,None,1.0,0.12995633482933044,1.0,1.0,1.0
+36,The lower regions and larger towns of the Alps are well-served by what?,motorways,motorways and main roads,1.0,0.8184265494346619,1.0,1.0,1.0
+37,Where was the CM intended to land upon re entering the Earth's atmosphere?,ocean,The Command Module (CM) was intended to land in the Atlantic Ocean upon re-entering the Earth's atmosphere.,1.0,0.36209917068481445,1.0,1.0,1.0
+38,What does the French constitution state for the language in Aslace?,French alone is the official language,The French constitution does not specifically address the language situation in Alsace.,1.0,0.5365455150604248,1.0,1.0,1.0
+39,Which BYU building features films in several languages?,International Cinema,None,1.0,0.19040165841579437,1.0,1.0,1.0
+40,What has helped geneologists researching slaves?,"Colonial records of French and Spanish slave ships and sales, and plantation records in all the former colonies","Plantation records, court records, land deeds, and other sources have helped genealogists researching slaves. Additionally, they have utilized oral histories passed down in black families to trace African-American families and individuals before 1870.",1.0,0.5270050168037415,1.0,1.0,1.0
+41,When did the first free election take place?,1492,The first free election took place in Namibia in November 1989.,0.0,-0.016440900042653084,0.0,0.0,0.0
+42,Of what discipline is ethology a branch?,zoology,None,0.0,0.1030094176530838,0.0,0.0,0.0
+43,What New Haven trial is known to be the longest in the history of Connecticut?,New Haven Black Panther trials,"The New Haven Black Panther trials took place in 1970, which are known to be the largest and longest trials in Connecticut history.",1.0,0.7502564787864685,1.0,1.0,1.0
+44,In what periodical was the new sovereign status of the Russian Federation first published?,Rossiyskaya Gazeta,"According to the context, the new sovereign status of the Russian Federation was first published in the Rossiyskaya Gazeta on January 6, 1992.",1.0,0.46929025650024414,1.0,1.0,1.0
+45,The first ship to carry a human through space was called what?,Vostok 1,Freedom 7,1.0,0.23525992035865784,1.0,1.0,1.0
+46,What is an alloy?,a mixture of metals or a mixture of a metal and another element,"An alloy is a mixture of metals or a mixture of a metal and another element, defined by metallic bonding character. It may be a solid solution of metal elements or a mixture of metallic phases.",1.0,0.7399008274078369,1.0,1.0,1.0
+47,Where was the Galilean village?,Nazareth,None,0.0,0.18154338002204895,0.0,0.0,0.0
+48,A fifth terminal was opened in 2008 for which UK airline?,British Airways,British Airways,1.0,1.0,1.0,1.0,1.0
+49,Does Florida benefit from taxes,Florida residents have received more federal monies than they pay in taxes: the state is a net beneficiary,"Since the state of Florida is mentioned as a net beneficiary of federal monies, it can be inferred that Florida benefits from taxes.",1.0,0.8594006299972534,1.0,1.0,1.0
+50,What two members of city council were convicted of extortion in 2005?,Ralph Inzunza and Deputy Mayor Michael Zucchet,Ralph Inzunza and Michael Zucchet were the two members of city council who were convicted of extortion in 2005.,1.0,0.6799553632736206,1.0,1.0,1.0
+51,What can affect how a person is treated?,Perceived sexual orientation,"Sociocultural characteristics such as gender, ethnicity, age, religious beliefs, stigma of addiction, fear of surgery or medication addiction, fear of appearing weak or impolite, feeling pain is deserved punishment, and cultural norms around reporting pain.",0.0,0.22473463416099548,0.0,0.0,0.0
+52,What currency did the euro replace in Portugal?,Portuguese Escudo,The euro replaced the Portuguese Escudo.,1.0,0.6955248117446899,1.0,1.0,1.0
+53,"In the fall quarter of 2014, how many students signed up for the university's four graduate divisions?","3,468","3,468 students",1.0,0.6146340370178223,1.0,1.0,1.0
+54,"Which Chinese suffix means ""area, district, region, ward""?",qū,None,0.0,0.3047703504562378,0.0,0.0,0.0
+55,What was another goal of the invasion of Saxony?,to advance into Bohemia where he might set up winter quarters at Austria's expense,Another goal of the invasion of Saxony was to advance into Bohemia where Frederick II might set up winter quarters at Austria's expense.,1.0,0.687862753868103,1.0,1.0,1.0
+56,In what year was War on the Floor released?,2001,None,0.0,0.2541510760784149,0.0,0.0,0.0
+57,Who was the main opponent that began to argue that the flat canvas did not support Cubism? ,Clement Greenberg.,Daniel Robbins,1.0,0.24968630075454712,1.0,1.0,1.0
+58,What are some of the equipment used by both men and women?,"Combat helmets, rucksacks, combat boots","Combat helmets, rucksacks, combat boots, and flak jackets",1.0,0.918124794960022,1.0,1.0,1.0
+59,Where did Charleston's original settlers come from?,Bermuda,"The first settlers primarily came from England, its Caribbean colony of Barbados, and its Atlantic colony of Bermuda. Among these were free people of color, born in the West Indies of alliances and marriages between Africans and Englanders.",1.0,0.33860141038894653,1.0,1.0,1.0
+60,What ruler's death in 323 BC marks the beginning of the Hellenistic period?,Alexander the Great,The death of Alexander the Great in 323 BC marks the beginning of the Hellenistic period.,1.0,0.561884880065918,1.0,1.0,1.0
+61,True crows belong to what group?,Corvida,The question is not answered in the provided context.,1.0,0.08848109841346741,1.0,1.0,1.0
+62,From what land did the people of Niutao believe they came?,Samoa,None,0.0,0.22741520404815674,0.0,0.0,0.0
+63,What caused the downfall of the downfall of the the original kingdom in Myanmar?,The Pagan Kingdom fell due to the Mongol invasions and several warring states emerged,The downfall of the original kingdom in Myanmar was caused by repeated Meithei raids into Upper Myanmar and a nagging rebellion in Lan Na.,1.0,0.4626113772392273,1.0,1.0,1.0
+64,What is the entity that controls the infrastructure of Hyderabad?,The Greater Hyderabad Municipal Corporation (GHMC),The Greater Hyderabad Municipal Corporation (GHMC) controls the infrastructure of Hyderabad.,1.0,0.8892562389373779,1.0,1.0,1.0
+65,What was the source of the misinformation concerning damage to the city's boardwalk?,photograph,"The source of the misinformation concerning damage to the city's boardwalk was a widely circulated photograph of a damaged section of the Boardwalk that was slated for repairs, prior to the storm, and incorrect news reports at the time of the disaster.",1.0,0.32470858097076416,1.0,1.0,1.0
+66,On which corner is the shopping center located?,Fresno and B streets,None,0.0,0.1961919367313385,0.0,0.0,0.0
+67,What economist believed that regulations did not keep up with financial innovation?,Paul Krugman,Timothy Geithner,1.0,0.48927608132362366,1.0,1.0,1.0
+68,What English music group was an inspiration for Kanye West on his second album?,Portishead,The English music group that was an inspiration for Kanye West on his second album was U2.,1.0,0.05974287539720535,1.0,1.0,1.0
+69,Why did New York State ban unmarked cars for traffic cops?,it endangered motorists who might be pulled over by people impersonating police officers,To prevent endangering motorists who might be pulled over by people impersonating police officers.,1.0,0.7355546355247498,1.0,1.0,1.0
+70,Kiss' double live album Alive! came out in what year?,1975,None,1.0,0.2789701223373413,1.0,1.0,1.0
+71,When did English Freemasonry spread to France?,the 1720s,English Freemasonry spread to France in the 1720s.,1.0,0.5811523795127869,1.0,1.0,1.0
+72,How do cardinals sign traditionally?,"by placing the title ""Cardinal"" (abbreviated Card.) after their personal name and before their surname","In accordance with tradition, cardinals sign by placing the title ""Cardinal"" (abbreviated Card.) after their personal name and before their surname, for example, ""John Card(inal) Doe"" or in Latin, ""Ioannes Card(inalis) Cognomen"".",1.0,0.8314472436904907,1.0,1.0,1.0
+73,How many LEGAT offices does the FBI operate?,60,60,1.0,1.0,1.0,1.0,1.0
+74,Who led the group which created the Soviet state?,Vladimir Lenin,Vladimir Lenin led the group that created the Soviet state.,1.0,0.6426494121551514,1.0,1.0,1.0
+75,What makes pure metals impure metals?,unwanted impurities,The presence of unwanted impurities makes pure metals impure metals.,1.0,0.6180329322814941,1.0,1.0,1.0
+76,English common law generally said what?,a man gave his status to his children,English common law generally said that it is the law of the state to the extent that it is not repugnant to domestic law or indigenous conditions.,0.0,0.08139576017856598,0.0,0.0,0.0
+77,Which industries does West Park give priority to?,"electronic information, biomedicine and precision machinery","The West Park gives priority to three major industries: electronic information, biomedicine, and precision machinery.",1.0,0.4968610107898712,1.0,1.0,1.0
+78,The church of Santa Costanza is in what country?,Rome,None.,1.0,0.2116280198097229,1.0,1.0,1.0
+79,What percentage of Iberians are Sephardic Bnei Anusim?,19.8%,None,1.0,0.2544945776462555,1.0,1.0,1.0
+80,"Besides the PAIGC, what is the other major political party?",PRS (Party for Social Renewal),None,0.0,0.07254228740930557,0.0,0.0,0.0
+81,What are the clothing of the Carnival groups full of?,elegance,"The clothing of the Carnival groups are full of outlandish costumes, masks, and thematic outfits.",1.0,0.17574268579483032,1.0,1.0,1.0
+82,Who did Madonna play in the role A League Of Their Own?,Mae Mordabito,None,1.0,0.13798777759075165,1.0,1.0,1.0
+83,Who was the Duke of Bavaria in 1516?,William IV,None.,0.0,0.16524912416934967,0.0,0.0,0.0
+84,Who led the Panthers in sacks?,Kawann Short,Kawann Short led the Panthers in sacks with 11.,1.0,0.588971734046936,1.0,1.0,1.0
+85,How many Irish employees did Dell hire?,"4,500",None,1.0,0.2110360860824585,1.0,1.0,1.0
+86,Which archaeologist proposed the idea that the Amazon rainforest couldn't sustain large populations? ,Betty Meggers,Betty Meggers,1.0,1.0,1.0,1.0,1.0
+87,What must a teacher show towards the course materials for increase learning?,enthusiasm,A teacher must show a deep understanding and mastery of the course materials in order to increase learning.,1.0,0.13360176980495453,1.0,1.0,1.0
+88,What is Brazil's Congress called?,Congresso Nacional,Brazil's Congress is called the Brazilian Federal Senate.,1.0,0.5010949373245239,1.0,1.0,1.0
+89,What is the native language of St. Barts?,French,French,1.0,1.0,1.0,1.0,1.0
+90,Only who can handle the ball with his hands?,goalkeeper,The goalkeepers are the only players allowed to handle the ball with their hands.,1.0,0.5057395696640015,1.0,1.0,1.0
+91,What locations on Egypt's northern coast are major tourist destinations for recreational tourism?,"Dahab, Ras Sidr, Marsa Alam, Safaga","Sharm el-Sheikh, Hurghada, Luxor, Dahab, Ras Sidr, Marsa Alam, Safaga, and the northern coast of the Mediterranean.",1.0,0.5882750749588013,1.0,1.0,1.0
+92,What year was NHK Color created?,1972,1972,1.0,1.0000001192092896,1.0,1.0,1.0
+93,What did the Art of Noise hope to accomplish?,attempt to bring sampled and electronic sounds to the pop mainstream,None,0.0,0.08352266252040863,0.0,0.0,0.0
+94,The university agreed to grant a degree to any graduate of affiliate schoos that did what?,made a grade of A for all four years,The university agreed to grant a degree to any graduate of affiliate schools that made a grade of A for all four years.,1.0,0.618554949760437,1.0,1.0,1.0
+95,What was the main problem with the eMac's CRT?,relatively bulky and somewhat outdated,"The main problem with the eMac's CRT was that it made the computer relatively bulky and somewhat outdated, and its all-in-one construction meant it could not be expanded to meet consumer demand for larger monitors.",1.0,0.21316444873809814,1.0,1.0,1.0
+96,What type of secondary schools does Guinea-Bissau have?,general as well as technical,"Guinea-Bissau has several secondary schools, including general and technical secondary schools.",1.0,0.34961944818496704,1.0,1.0,1.0
+97,Who operates the Strasbourg tramway?,regional transit company Compagnie des Transports Strasbourgeois,Compagnie des Transports Strasbourgeois (CTS),1.0,0.8143786191940308,1.0,1.0,1.0
+98,What provides an account of the science of politics for a wise ruler?,The Arthashastra,"The Arthaśāstra, an ancient Indian treatise on statecraft by Kautilya and Viṣhṇugupta (Chāṇakya), provides an account of the science of politics for a wise ruler.",1.0,0.662844181060791,1.0,1.0,1.0
+99,What was the name of the fired Atari CEO?,Ray Kassar,Ray Kassar,1.0,1.0000001192092896,1.0,1.0,1.0

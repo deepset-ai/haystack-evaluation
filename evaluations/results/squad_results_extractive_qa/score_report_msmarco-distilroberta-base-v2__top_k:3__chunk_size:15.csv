@@ -1,0 +1,6 @@
+,score
+doc_mrr,0.66
+sas,0.5026022602058947
+doc_map,0.66
+doc_recall_single_hit,0.66
+doc_recall_multi_hit,0.66

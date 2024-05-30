@@ -1,0 +1,103 @@
+,questions,true_answers,predicted_answers,doc_mrr,sas,doc_map,doc_recall_single_hit,doc_recall_multi_hit
+0,What poet wrote a long poem describing Roman religious holidays?,Ovid,Publius Vergilius Maro,0.0,0.1915534883737564,0.0,0.0,0.0
+1,What is the form of hydrogen and carbon called?,hydrocarbons,monatomic,1.0,0.2314276099205017,1.0,1.0,1.0
+2,What adjective did Lawrence Toppman use to describe Craig's portrayal of James Bond?,Bored,"Bored, James Bored",1.0,0.6691499948501587,1.0,1.0,1.0
+3,Members of which organizations are disqualified from sitting in the SP as elected MSPs?,police and the armed forces,progressive formations,0.0,0.27868950366973877,0.0,0.0,0.0
+4,To what two islands does the ferry service connect?,Bainbridge and Vashon,Kingston and Cascade,0.0,0.2946470081806183,0.0,0.0,0.0
+5,What took the place of Mac's Xserve server?,Mac Mini and Mac Pro,Mac Mini and Mac Pro,1.0,1.0,1.0,1.0,1.0
+6,What is one example of an application that videoconferencing manufacturers have begun to offer?,still image streaming,live and still image streaming,1.0,0.8538230657577515,1.0,1.0,1.0
+7,What are Italian dialects termed in the Italian language?,dialetti,unofficial regional languages,1.0,0.16425953805446625,1.0,1.0,1.0
+8,What cycle starts with rubisco?,The Calvin cycle,Calvin,1.0,0.6778202056884766,1.0,1.0,1.0
+9,"Along with exhibition and distribution, what business did the Universal Film Manufacturing Company engage in?",movie production,Motion Picture Trust,1.0,0.37804362177848816,1.0,1.0,1.0
+10,Who was Robert's son?,Bohemond,Feynman,0.0,0.26266586780548096,0.0,0.0,0.0
+11,What words are inscribed on the mace of parliament?,"Wisdom, Compassion, Justice and Integrity",La Reyne le veult,0.0,0.0505109578371048,0.0,0.0,0.0
+12,Whose life was 'Schindler's List' based on?,Oskar Schindler,Oskar Schindler,1.0,1.0,1.0,1.0,1.0
+13,In what presidential election year did Schwarzenegger make a name for himself as a prominent Republican?,1988,1988,1.0,1.0000001192092896,1.0,1.0,1.0
+14,What component of the printed circuit board is appraised with boundary scan testing?,ICs,embedded components,1.0,0.2017785757780075,1.0,1.0,1.0
+15,Who had FA cup coverage from 1988-1997?,"From 1988 to 1997, the BBC and Sky Sports had coverage of the FA Cup",the BBC and Sky Sports,1.0,0.6875511407852173,1.0,1.0,1.0
+16,What percentage of the population was Caucasian in 1940?,92%,26.65%,0.0,0.6506688594818115,0.0,0.0,0.0
+17,In what year was Columbia University chartered?,1754,1948,0.0,0.3496686816215515,0.0,0.0,0.0
+18,"What is the owner, tenant or manager of a pub known as?",pub landlord,pub landlord,1.0,1.0,1.0,1.0,1.0
+19,How many people signed a petition in protest of Everton FC's crest redesign in 2013?,"over 22,000","22,000",1.0,0.8700043559074402,1.0,1.0,1.0
+20,What did Griffith's tool help increase?,transparency,transparency,1.0,1.0,1.0,1.0,1.0
+21,Where do samurais' teachings live on?,everyday life and in modern Japanese martial arts,a hundred,1.0,0.08542922139167786,1.0,1.0,1.0
+22,How many years does the term of a Richmond city council representative last?,four,four,1.0,0.9999999403953552,1.0,1.0,1.0
+23,When did an investigation occur under school casualties?,December 2008,December 2008,1.0,1.0,1.0,1.0,1.0
+24,How did Liang Ji die?,forced to commit suicide,jumping into the Yellow River,1.0,0.1585981696844101,1.0,1.0,1.0
+25,Who supported the reaction against the government?,Durango,Gorbachev,0.0,0.27442678809165955,0.0,0.0,0.0
+26,Jochi's death occurred in what year?,1226,1227,1.0,0.8892868161201477,1.0,1.0,1.0
+27,What influences role of minority leader?,personality and contextual factors,personality and contextual factors,1.0,1.0,1.0,1.0,1.0
+28,Did the rainforest managed to thrive during the glacial periods? ,"However, the rainforest still managed to thrive during these glacial periods, allowing for the survival and evolution of a broad diversity of species.",sparsely populated,1.0,0.160796657204628,1.0,1.0,1.0
+29,What genre was 'LA 2017'?,futuristic science fiction,glam metal,0.0,0.206457257270813,0.0,0.0,0.0
+30,Who had issues with JFK's proposal?,NAACP,American public,0.0,0.29663193225860596,0.0,0.0,0.0
+31,What does CATOBAR allow for?,deployment of heavy jets with full loadouts,to recover their aircraft,1.0,0.3247508704662323,1.0,1.0,1.0
+32,Where were these forts commonly built?,hills,"Utrecht, dating back to the Stone Age (app. 2200 BCE) and settling in the Bronze Age (app. 1800–800 BCE), the founding date of the city is usually related to the construction of a Roman fortification (castellum), probably built in around 50 CE. A series of such fortresses was built after the Roman emperor Claudius decided the empire should not expand north",0.0,-0.022241460159420967,0.0,0.0,0.0
+33,What bacteria is an exception to single circular chromosome rule?,Spirochaetes of the genus Borrelia,archaea,0.0,0.2160634845495224,0.0,0.0,0.0
+34,Who made up most unions between Europeans and natives?,European men and Indigenous American women,African men,1.0,0.5130178928375244,1.0,1.0,1.0
+35,What did the Guardian name her?,Artist of the Decade,Alexandrina Victoria,0.0,0.1836983859539032,0.0,0.0,0.0
+36,The lower regions and larger towns of the Alps are well-served by what?,motorways,motorways and main roads,1.0,0.8184265494346619,1.0,1.0,1.0
+37,Where was the CM intended to land upon re entering the Earth's atmosphere?,ocean,"Antarctica was by the American sealer John Davis, apparently at Hughes Bay, near Cape Charles, in West Antarctica on 7 February 1821, although some historians dispute this claim. The first recorded and confirmed landing was at Cape Adair in 1895.
+Since the 1970s, an important focus of study has been the ozone layer in the atmosphere above Antarctica",0.0,0.2705155909061432,0.0,0.0,0.0
+38,What does the French constitution state for the language in Aslace?,French alone is the official language,French alone is the official language of the Republic,1.0,0.9126567840576172,1.0,1.0,1.0
+39,Which BYU building features films in several languages?,International Cinema,International Cinema,1.0,1.0000001192092896,1.0,1.0,1.0
+40,What has helped geneologists researching slaves?,"Colonial records of French and Spanish slave ships and sales, and plantation records in all the former colonies",population mapping studies,1.0,0.20392107963562012,1.0,1.0,1.0
+41,When did the first free election take place?,1492,28 January 2012,0.0,0.3828832507133484,0.0,0.0,0.0
+42,Of what discipline is ethology a branch?,zoology,sociology,0.0,0.24033565819263458,0.0,0.0,0.0
+43,What New Haven trial is known to be the longest in the history of Connecticut?,New Haven Black Panther trials,wintered over,1.0,0.12482216209173203,1.0,1.0,1.0
+44,In what periodical was the new sovereign status of the Russian Federation first published?,Rossiyskaya Gazeta,Rossiyskaya Gazeta,1.0,1.0,1.0,1.0,1.0
+45,The first ship to carry a human through space was called what?,Vostok 1,The UK 1942 Design Light Fleet Carrier,0.0,0.09703584015369415,0.0,0.0,0.0
+46,What is an alloy?,a mixture of metals or a mixture of a metal and another element,a mixture of metals or a mixture of a metal and another element,1.0,1.0,1.0,1.0,1.0
+47,Where was the Galilean village?,Nazareth,The Central Ganges Plain,0.0,0.09542219340801239,0.0,0.0,0.0
+48,A fifth terminal was opened in 2008 for which UK airline?,British Airways,London Heathrow Airport,0.0,0.4757714569568634,0.0,0.0,0.0
+49,Does Florida benefit from taxes,Florida residents have received more federal monies than they pay in taxes: the state is a net beneficiary,the state is a net beneficiary,1.0,0.5076737403869629,1.0,1.0,1.0
+50,What two members of city council were convicted of extortion in 2005?,Ralph Inzunza and Deputy Mayor Michael Zucchet,"three former supporters of Mayor Bob Filner asked him to resign because of allegations of repeated sexual harassment. Over the ensuing six weeks, 18 women came forward to publicly claim that Filner had sexually harassed them, and multiple individuals and groups called for him to resign. On August 19 Filner and city representatives entered a mediation process, as a result of which Filner agreed to resign, effective August 30, 2013, while the city agreed to limit his legal and financial exposure. Filner subsequently pleaded guilty to one felony count of false imprisonment and two misdemeanor battery charges, and was sentenced to house arrest and probation.
+San Diego was ranked as the 20th-safest city in America in 2013 by Business Insider. According to Forbes magazine, San Diego was the ninth-safest city in the top 10 list of safest cities in the U.S. in 2010. Like most major cities, San Diego had a declining crime rate from 1990 to 2000. Crime in San Diego increased in the early 2000s. In 2004, San Diego had the sixth lowest crime rate of any U.S. city with over half a million residents. From 2002 to 2006, the crime rate overall dropped 0.8%, though not evenly by category",1.0,0.2891888916492462,1.0,1.0,1.0
+51,What can affect how a person is treated?,Perceived sexual orientation,Cultural barriers,0.0,0.1536554992198944,0.0,0.0,0.0
+52,What currency did the euro replace in Portugal?,Portuguese Escudo,Portuguese Escudo,1.0,1.0,1.0,1.0,1.0
+53,"In the fall quarter of 2014, how many students signed up for the university's four graduate divisions?","3,468",30%,0.0,-0.054425328969955444,0.0,0.0,0.0
+54,"Which Chinese suffix means ""area, district, region, ward""?",qū,hétǐzì,0.0,0.3903588056564331,0.0,0.0,0.0
+55,What was another goal of the invasion of Saxony?,to advance into Bohemia where he might set up winter quarters at Austria's expense,inflict a decisive defeat on Austrian forces,1.0,0.34325259923934937,1.0,1.0,1.0
+56,In what year was War on the Floor released?,2001,2005,0.0,0.743471086025238,0.0,0.0,0.0
+57,Who was the main opponent that began to argue that the flat canvas did not support Cubism? ,Clement Greenberg.,Clement Greenberg,1.0,0.982132077217102,1.0,1.0,1.0
+58,What are some of the equipment used by both men and women?,"Combat helmets, rucksacks, combat boots","Combat helmets, rucksacks, combat boots, and flak jackets",1.0,0.918124794960022,1.0,1.0,1.0
+59,Where did Charleston's original settlers come from?,Bermuda,England,1.0,0.3443654775619507,1.0,1.0,1.0
+60,What ruler's death in 323 BC marks the beginning of the Hellenistic period?,Alexander the Great,Alexander,0.0,0.842235267162323,0.0,0.0,0.0
+61,True crows belong to what group?,Corvida,Avialae,1.0,0.359799861907959,1.0,1.0,1.0
+62,From what land did the people of Niutao believe they came?,Samoa,Ecuador,0.0,0.45803403854370117,0.0,0.0,0.0
+63,What caused the downfall of the downfall of the the original kingdom in Myanmar?,The Pagan Kingdom fell due to the Mongol invasions and several warring states emerged,Bayinnaung's death,1.0,0.142035111784935,1.0,1.0,1.0
+64,What is the entity that controls the infrastructure of Hyderabad?,The Greater Hyderabad Municipal Corporation (GHMC),Greater Hyderabad Municipal Corporation,1.0,0.7953817248344421,1.0,1.0,1.0
+65,What was the source of the misinformation concerning damage to the city's boardwalk?,photograph,suburbia,1.0,0.22139787673950195,1.0,1.0,1.0
+66,On which corner is the shopping center located?,Fresno and B streets,Cornmarket Street,0.0,0.504166305065155,0.0,0.0,0.0
+67,What economist believed that regulations did not keep up with financial innovation?,Paul Krugman,U.,1.0,0.22222092747688293,1.0,1.0,1.0
+68,What English music group was an inspiration for Kanye West on his second album?,Portishead,Pablo,1.0,0.1983252763748169,1.0,1.0,1.0
+69,Why did New York State ban unmarked cars for traffic cops?,it endangered motorists who might be pulled over by people impersonating police officers,it endangered motorists who might be pulled over by people impersonating police officers,1.0,1.0000001192092896,1.0,1.0,1.0
+70,Kiss' double live album Alive! came out in what year?,1975,1987,1.0,0.6074543595314026,1.0,1.0,1.0
+71,When did English Freemasonry spread to France?,the 1720s,eighteenth century,0.0,0.6370773315429688,0.0,0.0,0.0
+72,How do cardinals sign traditionally?,"by placing the title ""Cardinal"" (abbreviated Card.) after their personal name and before their surname","""Cardinal [First name] [Surname]"".",1.0,0.7567721605300903,1.0,1.0,1.0
+73,How many LEGAT offices does the FBI operate?,60,56,1.0,0.8467414975166321,1.0,1.0,1.0
+74,Who led the group which created the Soviet state?,Vladimir Lenin,Vladimir Lenin,1.0,1.0,1.0,1.0,1.0
+75,What makes pure metals impure metals?,unwanted impurities,unwanted impurities,1.0,1.0,1.0,1.0,1.0
+76,English common law generally said what?,a man gave his status to his children,the law of the state,0.0,0.11517596244812012,0.0,0.0,0.0
+77,Which industries does West Park give priority to?,"electronic information, biomedicine and precision machinery","electronic information, biomedicine and precision machinery",1.0,1.0,1.0,1.0,1.0
+78,The church of Santa Costanza is in what country?,Rome,Uruguay,0.0,0.4448183476924896,0.0,0.0,0.0
+79,What percentage of Iberians are Sephardic Bnei Anusim?,19.8%,19.8%,1.0,1.0000001192092896,1.0,1.0,1.0
+80,"Besides the PAIGC, what is the other major political party?",PRS (Party for Social Renewal),"far-left and regionalism parties in the national parliaments of much of the European Union, mainstream political parties may form an informal cordon sanitarian",0.0,0.29724347591400146,0.0,0.0,0.0
+81,What are the clothing of the Carnival groups full of?,elegance,masks and costume,1.0,0.18376953899860382,1.0,1.0,1.0
+82,Who did Madonna play in the role A League Of Their Own?,Mae Mordabito,Ciccone siblings,1.0,0.09904835373163223,1.0,1.0,1.0
+83,Who was the Duke of Bavaria in 1516?,William IV,Albert,0.0,0.2965250611305237,0.0,0.0,0.0
+84,Who led the Panthers in sacks?,Kawann Short,Kawann Short,1.0,1.0,1.0,1.0,1.0
+85,How many Irish employees did Dell hire?,"4,500","4,500",1.0,1.0,1.0,1.0,1.0
+86,Which archaeologist proposed the idea that the Amazon rainforest couldn't sustain large populations? ,Betty Meggers,Michael Heckenberger,1.0,0.2868870496749878,1.0,1.0,1.0
+87,What must a teacher show towards the course materials for increase learning?,enthusiasm,broaden the viewpoint of all,1.0,0.11436337977647781,1.0,1.0,1.0
+88,What is Brazil's Congress called?,Congresso Nacional,Congresso Nacional,1.0,1.0000001192092896,1.0,1.0,1.0
+89,What is the native language of St. Barts?,French,Creole,1.0,0.5894284248352051,1.0,1.0,1.0
+90,Only who can handle the ball with his hands?,goalkeeper,goalkeepers,1.0,0.8418211936950684,1.0,1.0,1.0
+91,What locations on Egypt's northern coast are major tourist destinations for recreational tourism?,"Dahab, Ras Sidr, Marsa Alam, Safaga","Sharm el-Sheikh (or City of Peace), Hurghada, Luxor (known as world's greatest open-air museum/ or City of the ⅓ of world monuments), Dahab, Ras Sidr, Marsa Alam, Safaga",1.0,0.4999712109565735,1.0,1.0,1.0
+92,What year was NHK Color created?,1972,4000 BC,0.0,0.24298781156539917,0.0,0.0,0.0
+93,What did the Art of Noise hope to accomplish?,attempt to bring sampled and electronic sounds to the pop mainstream,rendered inaudible by another tone of lower frequency,0.0,0.34232622385025024,0.0,0.0,0.0
+94,The university agreed to grant a degree to any graduate of affiliate schoos that did what?,made a grade of A for all four years,monks and nuns taught classes,0.0,0.18193241953849792,0.0,0.0,0.0
+95,What was the main problem with the eMac's CRT?,relatively bulky and somewhat outdated,bulky and somewhat outdated,1.0,0.9688735008239746,1.0,1.0,1.0
+96,What type of secondary schools does Guinea-Bissau have?,general as well as technical,general as well as technical,1.0,0.9999998807907104,1.0,1.0,1.0
+97,Who operates the Strasbourg tramway?,regional transit company Compagnie des Transports Strasbourgeois,"Compagnie des Transports Strasbourgeois (CTS),",1.0,0.8199418187141418,1.0,1.0,1.0
+98,What provides an account of the science of politics for a wise ruler?,The Arthashastra,Arthaśāstra,0.0,0.8193215131759644,0.0,0.0,0.0
+99,What was the name of the fired Atari CEO?,Ray Kassar,Ray Kassar,1.0,1.0000001192092896,1.0,1.0,1.0

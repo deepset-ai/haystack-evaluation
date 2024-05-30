@@ -110,19 +110,19 @@ def parameter_tuning(questions, answers):
     out_path.mkdir(exist_ok=True)
 
     for embedding_model in embedding_models:
-        for top_k in top_k_values:
-            for chunk_size in chunk_sizes:
+        for chunk_size in chunk_sizes:
+            print("Indexing documents")
+            doc_store = indexing(embedding_model, chunk_size)
+            for top_k in top_k_values:
                 name_params = f"{embedding_model.split('/')[-1]}__top_k:{top_k}__chunk_size:{chunk_size}"
                 print(name_params)
-                print("Indexing documents")
-                doc_store = indexing(embedding_model, chunk_size)
                 print("Running RAG pipeline")
                 retrieved_contexts, predicted_answers = run_basic_rag(doc_store, questions, embedding_model, top_k)
                 print(f"Running evaluation")
                 results, inputs = run_evaluation(questions, answers, retrieved_contexts, predicted_answers, embedding_model)
                 eval_results = EvaluationRunResult(run_name=name_params, inputs=inputs, results=results)
-                eval_results.score_report().to_csv(f"{out_path}/score_report_{name_params}.csv")
-                eval_results.to_pandas().to_csv(f"{out_path}/detailed_{name_params}.csv")
+                eval_results.score_report().to_csv(f"{out_path}/score_report_{name_params}.csv", index=False)
+                eval_results.to_pandas().to_csv(f"{out_path}/detailed_{name_params}.csv", index=False)
 
 
 def main():
