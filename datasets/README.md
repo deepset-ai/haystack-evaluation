@@ -17,9 +17,6 @@ The following metrics can be used:
 Check the [RAG over ARAGOG dataset notebook](aragog_evaluation.ipynb) for an example.
 
 
----
-
-
 ## SQuAD dataset 
 
 The SQuAD dataset is a collection of questions and answers from Wikipedia articles. 
