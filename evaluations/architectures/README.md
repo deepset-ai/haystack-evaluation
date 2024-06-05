@@ -1,12 +1,12 @@
 # RAG Techniques/Architectures
 
 
-## Baseline: basic RAG
+## Baseline RAG
 
 This is the baseline RAG technique, that retrieves the top-k documents and then uses  the generator to generate the answer.
 
 
-## Baseline: Extractive QA
+## Extractive QA
 
 Just like the basic RAG, this technique retrieves the top-k documents, but instead of using the generator to generate the answer, 
 it uses an extractive QA model to extract the answer from the retrieved documents.
