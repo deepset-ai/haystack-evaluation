@@ -46,7 +46,7 @@ def indexing(embedding_model: str, chunk_size: int):
 
 
 def read_question_answers() -> Tuple[List[str], List[str]]:
-    with open (base_path + "eval_questions.json", "r") as f:
+    with open(base_path + "eval_questions.json", "r") as f:
         data = json.load(f)
         questions = data["questions"]
         answers = data["ground_truths"]
