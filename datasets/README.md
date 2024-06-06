@@ -17,7 +17,11 @@ The following metrics can be used:
 
 ## 2. SQuAD dataset 
 
-The SQuAD dataset is a collection of questions and answers from Wikipedia articles. This dataset is typically used for training and evaluating models for extractive question-answering tasks.
+The SQuAD 1.1 dataset is a collection of questions and answers from Wikipedia articles, and it's typically used for training and evaluating models for extractive question-answering tasks.
+You can find more about this dataset on the paper [SQuAD: 100,000+ Questions for Machine Comprehension of Text](https://aclanthology.org/D16-1264/) and on the official website:
+[https://rajpurkar.github.io/SQuAD-explorer/](https://rajpurkar.github.io/SQuAD-explorer/)
+
+
 
 The dataset contains:
 - 490 Wikipedia articles in text format.
