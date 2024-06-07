@@ -143,7 +143,7 @@ def parameter_tuning(questions, answers, out_path: str):
 def create_args():
     parser = argparse.ArgumentParser(description='Run the ARAGOG dataset evaluation on a RAG pipeline')
     parser.add_argument(
-        '--output_dir',
+        '--output-dir',
         type=str,
         help='The output directory for the results',
         required=True
