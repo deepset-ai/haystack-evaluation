@@ -3,7 +3,6 @@ import json
 import os
 import random
 from pathlib import Path
-import datetime
 from typing import Tuple, List
 from openai import BadRequestError
 
@@ -158,9 +157,8 @@ def create_args():
     parser.add_argument('--sample', type=int, help='The number of questions to sample')
     return parser.parse_args()
 
-
+@timeit
 def main():
-    t1 = datetime.datetime.now()
     args = create_args()
     questions, answers = read_question_answers()
 
@@ -171,9 +169,6 @@ def main():
         answers = [answers[id] for id in sampled_ids]
 
     parameter_tuning(questions, answers, args.output_dir)
-    t2 = datetime.datetime.now()
-
-    print(f"Experiment took {t2 - t1}")
 
 
 if __name__ == '__main__':
