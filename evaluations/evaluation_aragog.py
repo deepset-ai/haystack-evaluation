@@ -4,7 +4,6 @@ import os
 import random
 from pathlib import Path
 from typing import Tuple, List
-
 from openai import BadRequestError
 
 from haystack import Pipeline
@@ -67,12 +66,16 @@ def run_basic_rag(doc_store, sample_questions, embedding_model, top_k):
         try:
             response = rag.run(
                 data={"query_embedder": {"text": q}, "prompt_builder": {"question": q}, "answer_builder": {"query": q}})
-            predicted_answers.append(response["answer_builder"]["answers"][0].data)
+            predicted_answer = response["answer_builder"]["answers"][0].data
+            if predicted_answer.lower() in ["none", "none."]:
+                predicted_answers.append(None)
+            else:
+                predicted_answers.append(predicted_answer)
             retrieved_contexts.append([d.content for d in response['answer_builder']['answers'][0].documents])
         except BadRequestError as e:
             print(f"Error with question: {q}")
             print(e)
-            predicted_answers.append("error")
+            predicted_answers.append(None)
             retrieved_contexts.append(retrieved_contexts)
 
     return retrieved_contexts, predicted_answers
@@ -101,7 +104,10 @@ def run_evaluation(sample_questions, sample_answers, retrieved_contexts, predict
         "sas": eval_pipeline_results['sas']
     }
 
-    inputs = {'questions': sample_questions, 'true_answers': sample_answers, 'predicted_answers': predicted_answers}
+    inputs = {'questions': sample_questions,
+              'contexts': retrieved_contexts,
+              'true_answers': sample_answers,
+              'predicted_answers': predicted_answers}
 
     return results, inputs
 
@@ -136,7 +142,7 @@ def parameter_tuning(questions, answers, out_path: str):
                 print(f"Running evaluation")
                 results, inputs = run_evaluation(questions, answers, retrieved_contexts, predicted_answers, embedding_model)
                 eval_results = EvaluationRunResult(run_name=name_params, inputs=inputs, results=results)
-                eval_results.score_report().to_csv(f"{out_path}/score_report_{name_params}.csv", index=False)
+                eval_results.score_report().to_csv(f"{out_path}/score_report_{name_params}.csv")
                 eval_results.to_pandas().to_csv(f"{out_path}/detailed_{name_params}.csv", index=False)
 
 
@@ -151,15 +157,16 @@ def create_args():
     parser.add_argument('--sample', type=int, help='The number of questions to sample')
     return parser.parse_args()
 
-
+@timeit
 def main():
     args = create_args()
     questions, answers = read_question_answers()
 
     if args.sample:
         random.seed(42)
-        questions = random.sample(questions, args.sample)
-        answers = random.sample(answers, args.sample)
+        sampled_ids = random.sample(range(len(questions)), args.sample)
+        questions = [questions[id] for id in sampled_ids]
+        answers = [answers[id] for id in sampled_ids]
 
     parameter_tuning(questions, answers, args.output_dir)
 
