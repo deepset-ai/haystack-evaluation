@@ -66,16 +66,12 @@ def run_basic_rag(doc_store, sample_questions, embedding_model, top_k):
         try:
             response = rag.run(
                 data={"query_embedder": {"text": q}, "prompt_builder": {"question": q}, "answer_builder": {"query": q}})
-            predicted_answer = response["answer_builder"]["answers"][0].data
-            if predicted_answer.lower() in ["none", "none."]:
-                predicted_answers.append(None)
-            else:
-                predicted_answers.append(predicted_answer)
+            predicted_answers.append(response["answer_builder"]["answers"][0].data)
             retrieved_contexts.append([d.content for d in response['answer_builder']['answers'][0].documents])
         except BadRequestError as e:
             print(f"Error with question: {q}")
             print(e)
-            predicted_answers.append(None)
+            predicted_answers.append("error")
             retrieved_contexts.append(retrieved_contexts)
 
     return retrieved_contexts, predicted_answers
@@ -91,11 +87,12 @@ def run_evaluation(sample_questions, sample_answers, retrieved_contexts, predict
     eval_pipeline_results = eval_pipeline.run(
         {
             "context_relevance": {"questions": sample_questions, "contexts": retrieved_contexts},
-            "faithfulness": {
-                "questions": sample_questions, "contexts": retrieved_contexts, "predicted_answers": predicted_answers
-            },
+            "faithfulness": {"questions": sample_questions,
+                             "contexts": retrieved_contexts,
+                             "predicted_answers": predicted_answers},
             "sas": {"predicted_answers": predicted_answers, "ground_truth_answers": sample_answers},
         }
+
     )
 
     results = {
@@ -142,7 +139,7 @@ def parameter_tuning(questions, answers, out_path: str):
                 print(f"Running evaluation")
                 results, inputs = run_evaluation(questions, answers, retrieved_contexts, predicted_answers, embedding_model)
                 eval_results = EvaluationRunResult(run_name=name_params, inputs=inputs, results=results)
-                eval_results.score_report().to_csv(f"{out_path}/score_report_{name_params}.csv")
+                eval_results.score_report().to_csv(f"{out_path}/score_report_{name_params}.csv", index=False)
                 eval_results.to_pandas().to_csv(f"{out_path}/detailed_{name_params}.csv", index=False)
 
 
@@ -157,6 +154,7 @@ def create_args():
     parser.add_argument('--sample', type=int, help='The number of questions to sample')
     return parser.parse_args()
 
+
 @timeit
 def main():
     args = create_args()
@@ -165,8 +163,8 @@ def main():
     if args.sample:
         random.seed(42)
         sampled_ids = random.sample(range(len(questions)), args.sample)
-        questions = [questions[id] for id in sampled_ids]
-        answers = [answers[id] for id in sampled_ids]
+        questions = [questions[idx] for idx in sampled_ids]
+        answers = [answers[idx] for idx in sampled_ids]
 
     parameter_tuning(questions, answers, args.output_dir)
 
