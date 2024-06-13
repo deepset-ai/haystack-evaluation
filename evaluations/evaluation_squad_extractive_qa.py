@@ -1,3 +1,4 @@
+import argparse
 import json
 import os
 import random
@@ -21,8 +22,9 @@ from haystack.evaluation import EvaluationRunResult
 from tqdm import tqdm
 
 from architectures.extractive_qa import get_extractive_qa_pipeline
+from utils.utils import timeit
 
-base_path = "datasets/SQuAD-2.0/transformed_squad/"
+base_path = "../datasets/SQuAD-2.0/transformed_squad/"
 
 
 def load_transformed_squad():
@@ -44,6 +46,7 @@ def load_transformed_squad():
     return questions, documents
 
 
+@timeit
 def indexing(documents, embedding_model, chunk_size):
     document_store = InMemoryDocumentStore()
     doc_splitter = DocumentSplitter(split_by="sentence", split_length=chunk_size)
@@ -60,6 +63,7 @@ def indexing(documents, embedding_model, chunk_size):
     return document_store
 
 
+@timeit
 def run_extractive_qa(doc_store, questions, embedding_model, top_k_retriever):
 
     extractive_qa = get_extractive_qa_pipeline(
@@ -82,6 +86,7 @@ def run_extractive_qa(doc_store, questions, embedding_model, top_k_retriever):
     return retrieved_docs, predicted_answers
 
 
+@timeit
 def run_evaluation(embedding_model, ground_truth_docs, retrieved_docs, questions, predicted_answers, ground_truth_answers):
     eval_pipeline = Pipeline()
     eval_pipeline.add_component("doc_mrr", DocumentMRREvaluator())
@@ -120,7 +125,11 @@ def run_evaluation(embedding_model, ground_truth_docs, retrieved_docs, questions
         "doc_recall_multi_hit": eval_pipeline_results['doc_recall_multi_hit']
     }
 
-    inputs = {'questions': questions, 'true_answers': ground_truth_answers, 'predicted_answers': predicted_answers}
+    inputs = {'questions': questions,
+              'true_answers': ground_truth_answers,
+              'predicted_answers': predicted_answers,
+              'retrieved_docs': retrieved_docs,
+              }
 
     return results, inputs
 
@@ -169,10 +178,35 @@ def parameter_tuning(queries, documents):
                 eval_results.to_pandas().to_csv(f"{out_path}/detailed_{name_params}.csv")
 
 
+def create_args():
+    parser = argparse.ArgumentParser(description='Run the ARAGOG dataset evaluation on a RAG pipeline')
+    parser.add_argument(
+        '--output-dir',
+        type=str,
+        help='The output directory for the results',
+        required=True
+    )
+    parser.add_argument(
+        '--sample',
+        type=int,
+        help='The number of questions to sample',
+        default=100
+    )
+    return parser.parse_args()
+
+
+@timeit
 def main():
     random.seed(42)
+    args = create_args()
     all_queries, documents = load_transformed_squad()
-    queries = random.sample(all_queries, 100)  # take a sample of 100 questions
+
+    # the total number of questions is 98k, so we take a sample of 100 or whatever the user specifies
+    queries = random.sample(all_queries, args.sample)
+    if args.sample:
+        queries = random.sample(all_queries, args.sample)
+
+    print(f"Running evaluation on {args.sample} questions")
     parameter_tuning(queries, documents)
 
 
