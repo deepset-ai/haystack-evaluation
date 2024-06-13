@@ -4,7 +4,6 @@ import os
 import random
 from pathlib import Path
 from typing import Tuple, List
-
 from openai import BadRequestError
 
 from haystack import Pipeline
@@ -88,11 +87,12 @@ def run_evaluation(sample_questions, sample_answers, retrieved_contexts, predict
     eval_pipeline_results = eval_pipeline.run(
         {
             "context_relevance": {"questions": sample_questions, "contexts": retrieved_contexts},
-            "faithfulness": {
-                "questions": sample_questions, "contexts": retrieved_contexts, "predicted_answers": predicted_answers
-            },
+            "faithfulness": {"questions": sample_questions,
+                             "contexts": retrieved_contexts,
+                             "predicted_answers": predicted_answers},
             "sas": {"predicted_answers": predicted_answers, "ground_truth_answers": sample_answers},
         }
+
     )
 
     results = {
@@ -101,7 +101,10 @@ def run_evaluation(sample_questions, sample_answers, retrieved_contexts, predict
         "sas": eval_pipeline_results['sas']
     }
 
-    inputs = {'questions': sample_questions, 'true_answers': sample_answers, 'predicted_answers': predicted_answers}
+    inputs = {'questions': sample_questions,
+              'contexts': retrieved_contexts,
+              'true_answers': sample_answers,
+              'predicted_answers': predicted_answers}
 
     return results, inputs
 
@@ -152,14 +155,16 @@ def create_args():
     return parser.parse_args()
 
 
+@timeit
 def main():
     args = create_args()
     questions, answers = read_question_answers()
 
     if args.sample:
         random.seed(42)
-        questions = random.sample(questions, args.sample)
-        answers = random.sample(answers, args.sample)
+        sampled_ids = random.sample(range(len(questions)), args.sample)
+        questions = [questions[idx] for idx in sampled_ids]
+        answers = [answers[idx] for idx in sampled_ids]
 
     parameter_tuning(questions, answers, args.output_dir)
 

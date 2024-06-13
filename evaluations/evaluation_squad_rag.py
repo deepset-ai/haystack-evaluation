@@ -122,7 +122,11 @@ def run_evaluation(embedding_model, ground_truth_docs, retrieved_docs, questions
         "doc_recall_multi_hit": eval_pipeline_results['doc_recall_multi_hit']
     }
 
-    inputs = {'questions': questions, 'true_answers': ground_truth_answers, 'predicted_answers': predicted_answers}
+    inputs = {'questions': questions,
+              'true_answers': ground_truth_answers,
+              'predicted_answers': predicted_answers,
+              'contexts': retrieved_docs
+              }
 
     return results, inputs
 
