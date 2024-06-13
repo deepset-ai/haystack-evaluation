@@ -174,8 +174,8 @@ def parameter_tuning(queries, documents):
                     ground_truth_answers
                 )
                 eval_results = EvaluationRunResult(run_name=name_params, inputs=inputs, results=results)
-                eval_results.score_report().to_csv(f"{out_path}/score_report_{name_params}.csv")
-                eval_results.to_pandas().to_csv(f"{out_path}/detailed_{name_params}.csv")
+                eval_results.score_report().to_csv(f"{out_path}/score_report_{name_params}.csv", index=False)
+                eval_results.to_pandas().to_csv(f"{out_path}/detailed_{name_params}.csv", index=False)
 
 
 def create_args():
