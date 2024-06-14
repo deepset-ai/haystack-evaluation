@@ -94,6 +94,8 @@ def main():
 
     print(emb_eval_run)
 
+    # ToDo: run the evaluation harness with hyde rag
+
 
 if __name__ == '__main__':
     main()
