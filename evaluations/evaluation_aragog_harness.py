@@ -61,7 +61,7 @@ def eval_pipeline(questions, answers, pipeline, components, run_name):
         metrics={
             RAGEvaluationMetric.SEMANTIC_ANSWER_SIMILARITY,  # how to specify the embedding model to use?
             RAGEvaluationMetric.ANSWER_FAITHFULNESS,
-            # RAGEvaluationMetric.CONTEXT_RELEVANCE
+            RAGEvaluationMetric.CONTEXT_RELEVANCE
         },
         rag_components=components
     )
