@@ -40,7 +40,7 @@ def indexing(embedding_model: str, chunk_size: int):
     pipeline.connect("splitter", "embedder")
     pipeline.connect("embedder", "writer")
     pdf_files = [full_path / "papers_for_questions" / f_name for f_name in os.listdir(files_path)]
-    pipeline.run({"converter": {"sources": pdf_files}})
+    pipeline.run({"converter": {"sources": pdf_files[0:3]}})
 
     return document_store
 
@@ -59,9 +59,9 @@ def eval_pipeline(questions, answers, pipeline, components, run_name):
     pipeline_eval_harness = RAGEvaluationHarness(
         pipeline,
         metrics={
-            RAGEvaluationMetric.SEMANTIC_ANSWER_SIMILARITY,
-            RAGEvaluationMetric.ANSWER_FAITHFULNESS
-            # ToDo: RAGEvaluationMetric.CONTEXT_RELEVANCE
+            RAGEvaluationMetric.SEMANTIC_ANSWER_SIMILARITY,  # how to specify the embedding model to use?
+            RAGEvaluationMetric.ANSWER_FAITHFULNESS,
+            # RAGEvaluationMetric.CONTEXT_RELEVANCE
         },
         rag_components=components
     )
@@ -84,16 +84,6 @@ def main():
     top_k = 3
     doc_store = indexing(embedding_model, chunk_size)
 
-    hyde_rag = rag_with_hyde(document_store=doc_store, embedding_model=embedding_model, top_k=top_k)
-    hyde_components = {
-        RAGExpectedComponent.QUERY_PROCESSOR: RAGExpectedComponentMetadata(
-            name="hyde", input_mapping={"query": "query"}),
-        RAGExpectedComponent.DOCUMENT_RETRIEVER: RAGExpectedComponentMetadata(
-            name="retriever", output_mapping={"retrieved_documents": "documents"}),
-        RAGExpectedComponent.RESPONSE_GENERATOR: RAGExpectedComponentMetadata(
-            name="llm", output_mapping={"replies": "replies"})
-    }
-
     rag = basic_rag(document_store=doc_store, embedding_model=embedding_model, top_k=top_k)
     rag_components = {
         RAGExpectedComponent.QUERY_PROCESSOR: RAGExpectedComponentMetadata(
@@ -103,14 +93,26 @@ def main():
         RAGExpectedComponent.RESPONSE_GENERATOR: RAGExpectedComponentMetadata(
             name="llm", output_mapping={"replies": "replies"})
     }
-
     baseline_rag_eval_output = eval_pipeline(questions[:25], answers[:25], rag, rag_components, "baseline_rag")
+
+    """
+    hyde_rag = rag_with_hyde(document_store=doc_store, embedding_model=embedding_model, top_k=top_k)
+    hyde_components = {
+        RAGExpectedComponent.QUERY_PROCESSOR: RAGExpectedComponentMetadata(
+            name="hyde", input_mapping={"query": "query"}),
+        RAGExpectedComponent.DOCUMENT_RETRIEVER: RAGExpectedComponentMetadata(
+            name="retriever", output_mapping={"retrieved_documents": "documents"}),
+        RAGExpectedComponent.RESPONSE_GENERATOR: RAGExpectedComponentMetadata(
+            name="llm", output_mapping={"replies": "replies"})
+    }
+    
     hyde_rag_eval_output = eval_pipeline(questions[:25], answers[:25], hyde_rag, hyde_components, "hyde_rag")
 
     comparative_df = baseline_rag_eval_output.results.comparative_individual_scores_report(
         hyde_rag_eval_output.results, keep_columns=["response"]
     )
     comparative_df.to_csv("comparative_scores.csv")
+    """
 
 
 if __name__ == '__main__':
