@@ -1,11 +1,8 @@
-# pip install haystack-experimental git+https://github.com/deepset-ai/haystack-experimental.git
-
 import json
 import os
 from pathlib import Path
 from typing import Tuple, List
 
-from architectures.basic_rag import basic_rag
 from haystack import Pipeline
 from haystack.components.converters import PyPDFToDocument
 from haystack.components.embedders import SentenceTransformersDocumentEmbedder
@@ -19,6 +16,9 @@ from haystack_experimental.evaluation.harness.rag import (
     RAGEvaluationInput,
     RAGExpectedComponent, RAGExpectedComponentMetadata,
 )
+
+from architectures.basic_rag import basic_rag
+from architectures.hyde_rag import rag_with_hyde
 from utils.utils import timeit
 
 base_path = "../datasets/ARAGOG/"
@@ -53,16 +53,48 @@ def read_question_answers() -> Tuple[List[str], List[str]]:
     return questions, answers
 
 
-def main():
+@timeit
+def eval_pipeline(questions, answers, pipeline, components, run_name):
 
+    pipeline_eval_harness = RAGEvaluationHarness(
+        pipeline,
+        metrics={
+            RAGEvaluationMetric.SEMANTIC_ANSWER_SIMILARITY,
+            RAGEvaluationMetric.ANSWER_FAITHFULNESS
+            # ToDo: RAGEvaluationMetric.CONTEXT_RELEVANCE
+        },
+        rag_components=components
+    )
+
+    hyde_eval_harness_input = RAGEvaluationInput(
+        queries=questions,
+        ground_truth_answers=answers,
+        additional_rag_inputs={
+            "prompt_builder": {"question": [q for q in questions]},
+            "answer_builder": {"query": [q for q in questions]},
+        },
+    )
+    return pipeline_eval_harness.run(inputs=hyde_eval_harness_input, run_name=run_name)
+
+
+def main():
     questions, answers = read_question_answers()
-    embedding_model = "sentence-transformers/all-MiniLM-L6-v2"
-    chunk_size = 32
-    top_k = 1
+    embedding_model = "sentence-transformers/msmarco-distilroberta-base-v2"
+    chunk_size = 128
+    top_k = 3
     doc_store = indexing(embedding_model, chunk_size)
 
-    rag = basic_rag(document_store=doc_store, embedding_model=embedding_model, top_k=top_k)
+    hyde_rag = rag_with_hyde(document_store=doc_store, embedding_model=embedding_model, top_k=top_k)
+    hyde_components = {
+        RAGExpectedComponent.QUERY_PROCESSOR: RAGExpectedComponentMetadata(
+            name="hyde", input_mapping={"query": "query"}),
+        RAGExpectedComponent.DOCUMENT_RETRIEVER: RAGExpectedComponentMetadata(
+            name="retriever", output_mapping={"retrieved_documents": "documents"}),
+        RAGExpectedComponent.RESPONSE_GENERATOR: RAGExpectedComponentMetadata(
+            name="llm", output_mapping={"replies": "replies"})
+    }
 
+    rag = basic_rag(document_store=doc_store, embedding_model=embedding_model, top_k=top_k)
     rag_components = {
         RAGExpectedComponent.QUERY_PROCESSOR: RAGExpectedComponentMetadata(
             name="query_embedder", input_mapping={"query": "text"}),
@@ -72,29 +104,13 @@ def main():
             name="llm", output_mapping={"replies": "replies"})
     }
 
-    emb_eval_harness = RAGEvaluationHarness(
-        rag,
-        metrics={RAGEvaluationMetric.SEMANTIC_ANSWER_SIMILARITY},
-        rag_components=rag_components
+    baseline_rag_eval_output = eval_pipeline(questions[:25], answers[:25], rag, rag_components, "baseline_rag")
+    hyde_rag_eval_output = eval_pipeline(questions[:25], answers[:25], hyde_rag, hyde_components, "hyde_rag")
+
+    comparative_df = baseline_rag_eval_output.results.comparative_individual_scores_report(
+        hyde_rag_eval_output.results, keep_columns=["response"]
     )
-
-    input_questions = questions[:3]
-    gold_answers = answers[:3]
-
-    eval_harness_input = RAGEvaluationInput(
-        queries=input_questions,
-        ground_truth_answers=gold_answers,
-        additional_rag_inputs={
-            "prompt_builder": {"question": [q for q in input_questions]},
-            "answer_builder": {"query": [q for q in input_questions]},
-        },
-    )
-
-    emb_eval_run = emb_eval_harness.run(inputs=eval_harness_input, run_name="emb_eval_run")
-
-    print(emb_eval_run)
-
-    # ToDo: run the evaluation harness with hyde rag
+    comparative_df.to_csv("comparative_scores.csv")
 
 
 if __name__ == '__main__':
