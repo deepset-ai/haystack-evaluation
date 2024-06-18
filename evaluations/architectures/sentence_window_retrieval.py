@@ -99,13 +99,18 @@ class SentenceWindowRetriever:
         self.doc_chunk_store = doc_chunk_store
         self.window_size = window_size
 
+    @staticmethod
+    def get_window_content(docs: List[Document]):
+        return [doc.content for doc in docs]
+
     @component.output_types(context_windows=List[DocumentChunksStore])
     def run(self, retrieved_documents: List[Document]):
         context_windows = []
         for doc in retrieved_documents:
             source_id = doc.meta['source_id']
             document_chunks = self.doc_chunk_store.mappings[source_id]
-            context_windows.append(document_chunks.get_window(doc.id, self.window_size))
+            window_text_content = self.get_window_content(document_chunks.get_window(doc.id, self.window_size))
+            context_windows.append(window_text_content)
         return {"context_windows": context_windows}
 
 
