@@ -105,7 +105,7 @@ class SentenceWindowRetriever:
         for doc in retrieved_documents:
             source_id = doc.meta['source_id']
             document_chunks = self.doc_chunk_store.mappings[source_id]
-            context_windows.append(document_chunks.get_window(source_id, self.window_size))
+            context_windows.append(document_chunks.get_window(doc.id, self.window_size))
         return {"context_windows": context_windows}
 
 
