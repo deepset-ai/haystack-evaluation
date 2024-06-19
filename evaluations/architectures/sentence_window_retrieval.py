@@ -95,13 +95,13 @@ def indexing(embedding_model: str, chunk_size: int, base_path: str) -> Tuple[InM
 @component
 class SentenceWindowRetriever:
 
-    def __init__(self, doc_chunk_store: DocumentChunksStore, window_size: int = 2):
+    def __init__(self, doc_chunk_store: DocumentChunksStore, window_size: int = 1):
         self.doc_chunk_store = doc_chunk_store
         self.window_size = window_size
 
     @staticmethod
     def get_window_content(docs: List[Document]):
-        return [doc.content for doc in docs]
+        return ' '.join([doc.content for doc in docs])
 
     @component.output_types(context_windows=List[DocumentChunksStore])
     def run(self, retrieved_documents: List[Document]):
@@ -121,7 +121,7 @@ def rag_sentence_window_retrieval(doc_store, doc_chunk_store, embedding_model, t
 
         Context:
         {% for document in documents %}
-            {{ document.content }}
+            {{ document }}
         {% endfor %}
 
         Question: {{question}}
@@ -139,11 +139,13 @@ def rag_sentence_window_retrieval(doc_store, doc_chunk_store, embedding_model, t
     basic_rag.add_component("answer_builder", AnswerBuilder())
 
     basic_rag.connect("query_embedder", "retriever.query_embedding")
-    basic_rag.connect("retriever", "prompt_builder.documents")
     basic_rag.connect("retriever", "sentence_window_retriever")
+    basic_rag.connect("sentence_window_retriever.context_windows", "prompt_builder.documents")
     basic_rag.connect("prompt_builder", "llm")
     basic_rag.connect("llm.replies", "answer_builder.replies")
     basic_rag.connect("llm.meta", "answer_builder.meta")
+
+    # to see the retrieved documents in the answer
     basic_rag.connect("retriever", "answer_builder.documents")
 
     return basic_rag
