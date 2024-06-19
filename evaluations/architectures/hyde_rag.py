@@ -83,10 +83,10 @@ class HypotheticalDocumentEmbedder:
         return {"hypothetical_embedding": hyde_vector[0].tolist(), "documents": result["embedder"]["documents"]}
 
 
-def rag_with_hyde(document_store, embedding_model, nr_completions=3, top_k=2):
+def rag_with_hyde(document_store, embedding_model, nr_completions=5, top_k=2):
     template = """
         You have to answer the following question based on the given context information only.
-        If the context is empty or just a '\n' answer "I don't know".
+        If the context is empty or just a '\n' answer with None, example: "None".
 
         Context:
         {% for document in documents %}

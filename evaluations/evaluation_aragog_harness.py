@@ -80,8 +80,8 @@ def eval_pipeline(questions, answers, pipeline, components, run_name, sas_embedd
     overrides = RAGEvaluationOverrides(
         eval_pipeline={
             RAGEvaluationMetric.SEMANTIC_ANSWER_SIMILARITY: {"model": sas_embedding_model},
-            RAGEvaluationMetric.CONTEXT_RELEVANCE: {"raise_on_failure": False},
-            RAGEvaluationMetric.ANSWER_FAITHFULNESS: {"raise_on_failure": False},
+            # RAGEvaluationMetric.CONTEXT_RELEVANCE: {"raise_on_failure": False},
+            # RAGEvaluationMetric.ANSWER_FAITHFULNESS: {"raise_on_failure": False},
         }
     )
 
@@ -112,7 +112,7 @@ def main():
     baseline_rag_eval_output = eval_pipeline(questions, answers, rag, rag_components, "baseline_rag", embeddings)
 
     # HyDE RAG
-    hyde_rag = rag_with_hyde(document_store=doc_store, embedding_model=embeddings, top_k=top_k)
+    hyde_rag = rag_with_hyde(document_store=doc_store, embedding_model=embeddings, top_k=top_k, nr_completions=5)
     hyde_components = {
         RAGExpectedComponent.QUERY_PROCESSOR: RAGExpectedComponentMetadata(
             name="hyde", input_mapping={"query": "query"}),
@@ -124,13 +124,16 @@ def main():
     hyde_rag_eval_output = eval_pipeline(questions, answers, hyde_rag, hyde_components, "hyde_rag", embeddings)
 
     print(baseline_rag_eval_output.results.score_report())
+    print()
     print(hyde_rag_eval_output.results.score_report())
 
     comparative_df = baseline_rag_eval_output.results.comparative_individual_scores_report(
-        hyde_rag_eval_output.results, keep_columns=["responses"]
+        hyde_rag_eval_output.results, keep_columns=["responses", "ground_truth_answers"]
     )
 
     comparative_df.to_csv("comparative_scores.csv", index=False)
+
+    # ToDo: try with SQuAD dataset and see retrieval performance
 
 
 if __name__ == '__main__':
