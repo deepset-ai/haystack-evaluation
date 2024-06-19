@@ -108,7 +108,6 @@ def main():
         questions[:25], answers[:25], rag, rag_components, "baseline_rag", embedding_model
     )
 
-    """
     hyde_rag = rag_with_hyde(document_store=doc_store, embedding_model=embedding_model, top_k=top_k)
     hyde_components = {
         RAGExpectedComponent.QUERY_PROCESSOR: RAGExpectedComponentMetadata(
@@ -119,12 +118,11 @@ def main():
             name="llm", output_mapping={"replies": "replies"})
     }
     
-    hyde_rag_eval_output = eval_pipeline(questions[:25], answers[:25], hyde_rag, hyde_components, "hyde_rag")
+    hyde_rag_eval_output = eval_pipeline(questions[:25], answers[:25], hyde_rag, hyde_components, "hyde_rag", embedding_model)
     comparative_df = baseline_rag_eval_output.results.comparative_individual_scores_report(
         hyde_rag_eval_output.results, keep_columns=["response"]
     )
     comparative_df.to_csv("comparative_scores.csv", index=False)
-    """
 
 
 if __name__ == '__main__':
