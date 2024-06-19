@@ -14,7 +14,9 @@ from haystack_experimental.evaluation.harness.rag import (
     RAGEvaluationHarness,
     RAGEvaluationMetric,
     RAGEvaluationInput,
-    RAGExpectedComponent, RAGExpectedComponentMetadata,
+    RAGExpectedComponent,
+    RAGExpectedComponentMetadata,
+    RAGEvaluationOverrides
 )
 
 from architectures.basic_rag import basic_rag
@@ -54,12 +56,12 @@ def read_question_answers() -> Tuple[List[str], List[str]]:
 
 
 @timeit
-def eval_pipeline(questions, answers, pipeline, components, run_name):
+def eval_pipeline(questions, answers, pipeline, components, run_name, sas_embedding_model):
 
     pipeline_eval_harness = RAGEvaluationHarness(
         pipeline,
         metrics={
-            RAGEvaluationMetric.SEMANTIC_ANSWER_SIMILARITY,  # how to specify the embedding model to use?
+            RAGEvaluationMetric.SEMANTIC_ANSWER_SIMILARITY,
             RAGEvaluationMetric.ANSWER_FAITHFULNESS,
             RAGEvaluationMetric.CONTEXT_RELEVANCE
         },
@@ -74,7 +76,16 @@ def eval_pipeline(questions, answers, pipeline, components, run_name):
             "answer_builder": {"query": [q for q in questions]},
         },
     )
-    return pipeline_eval_harness.run(inputs=hyde_eval_harness_input, run_name=run_name)
+
+    overrides = RAGEvaluationOverrides(
+        eval_pipeline={RAGEvaluationMetric.SEMANTIC_ANSWER_SIMILARITY: {"model": sas_embedding_model}}
+    )
+
+    return pipeline_eval_harness.run(
+        inputs=hyde_eval_harness_input,
+        run_name=run_name,
+        overrides=overrides
+    )
 
 
 def main():
@@ -93,7 +104,9 @@ def main():
         RAGExpectedComponent.RESPONSE_GENERATOR: RAGExpectedComponentMetadata(
             name="llm", output_mapping={"replies": "replies"})
     }
-    baseline_rag_eval_output = eval_pipeline(questions[:25], answers[:25], rag, rag_components, "baseline_rag")
+    baseline_rag_eval_output = eval_pipeline(
+        questions[:25], answers[:25], rag, rag_components, "baseline_rag", embedding_model
+    )
 
     """
     hyde_rag = rag_with_hyde(document_store=doc_store, embedding_model=embedding_model, top_k=top_k)
@@ -107,11 +120,10 @@ def main():
     }
     
     hyde_rag_eval_output = eval_pipeline(questions[:25], answers[:25], hyde_rag, hyde_components, "hyde_rag")
-
     comparative_df = baseline_rag_eval_output.results.comparative_individual_scores_report(
         hyde_rag_eval_output.results, keep_columns=["response"]
     )
-    comparative_df.to_csv("comparative_scores.csv")
+    comparative_df.to_csv("comparative_scores.csv", index=False)
     """
 
 
