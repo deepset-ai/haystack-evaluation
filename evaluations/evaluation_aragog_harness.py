@@ -78,7 +78,11 @@ def eval_pipeline(questions, answers, pipeline, components, run_name, sas_embedd
     )
 
     overrides = RAGEvaluationOverrides(
-        eval_pipeline={RAGEvaluationMetric.SEMANTIC_ANSWER_SIMILARITY: {"model": sas_embedding_model}}
+        eval_pipeline={
+            RAGEvaluationMetric.SEMANTIC_ANSWER_SIMILARITY: {"model": sas_embedding_model},
+            RAGEvaluationMetric.CONTEXT_RELEVANCE: {"raise_on_failure": False},
+            RAGEvaluationMetric.ANSWER_FAITHFULNESS: {"raise_on_failure": False},
+        }
     )
 
     return pipeline_eval_harness.run(
@@ -90,12 +94,13 @@ def eval_pipeline(questions, answers, pipeline, components, run_name, sas_embedd
 
 def main():
     questions, answers = read_question_answers()
-    embedding_model = "sentence-transformers/msmarco-distilroberta-base-v2"
+    embeddings = "sentence-transformers/msmarco-distilroberta-base-v2"
     chunk_size = 128
     top_k = 3
-    doc_store = indexing(embedding_model, chunk_size)
+    doc_store = indexing(embeddings, chunk_size)
 
-    rag = basic_rag(document_store=doc_store, embedding_model=embedding_model, top_k=top_k)
+    # baseline RAG
+    rag = basic_rag(document_store=doc_store, embedding_model=embeddings, top_k=top_k)
     rag_components = {
         RAGExpectedComponent.QUERY_PROCESSOR: RAGExpectedComponentMetadata(
             name="query_embedder", input_mapping={"query": "text"}),
@@ -104,11 +109,10 @@ def main():
         RAGExpectedComponent.RESPONSE_GENERATOR: RAGExpectedComponentMetadata(
             name="llm", output_mapping={"replies": "replies"})
     }
-    baseline_rag_eval_output = eval_pipeline(
-        questions[:25], answers[:25], rag, rag_components, "baseline_rag", embedding_model
-    )
+    baseline_rag_eval_output = eval_pipeline(questions, answers, rag, rag_components, "baseline_rag", embeddings)
 
-    hyde_rag = rag_with_hyde(document_store=doc_store, embedding_model=embedding_model, top_k=top_k)
+    # HyDE RAG
+    hyde_rag = rag_with_hyde(document_store=doc_store, embedding_model=embeddings, top_k=top_k)
     hyde_components = {
         RAGExpectedComponent.QUERY_PROCESSOR: RAGExpectedComponentMetadata(
             name="hyde", input_mapping={"query": "query"}),
@@ -117,11 +121,15 @@ def main():
         RAGExpectedComponent.RESPONSE_GENERATOR: RAGExpectedComponentMetadata(
             name="llm", output_mapping={"replies": "replies"})
     }
-    
-    hyde_rag_eval_output = eval_pipeline(questions[:25], answers[:25], hyde_rag, hyde_components, "hyde_rag", embedding_model)
+    hyde_rag_eval_output = eval_pipeline(questions, answers, hyde_rag, hyde_components, "hyde_rag", embeddings)
+
+    print(baseline_rag_eval_output.results.score_report())
+    print(hyde_rag_eval_output.results.score_report())
+
     comparative_df = baseline_rag_eval_output.results.comparative_individual_scores_report(
-        hyde_rag_eval_output.results, keep_columns=["response"]
+        hyde_rag_eval_output.results, keep_columns=["responses"]
     )
+
     comparative_df.to_csv("comparative_scores.csv", index=False)
 
 
