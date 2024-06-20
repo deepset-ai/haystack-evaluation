@@ -42,7 +42,7 @@ def indexing(embedding_model: str, chunk_size: int):
     pipeline.connect("splitter", "embedder")
     pipeline.connect("embedder", "writer")
     pdf_files = [full_path / "papers_for_questions" / f_name for f_name in os.listdir(files_path)]
-    pipeline.run({"converter": {"sources": pdf_files[0:3]}})
+    pipeline.run({"converter": {"sources": pdf_files}})
 
     return document_store
 
@@ -97,9 +97,6 @@ def main():
     top_k = 3
     doc_store = indexing(embeddings, chunk_size)
 
-    questions = questions[0:10]
-    answers = answers[0:10]
-
     # baseline RAG
     rag = basic_rag(document_store=doc_store, embedding_model=embeddings, top_k=top_k)
     rag_components = {
@@ -133,8 +130,6 @@ def main():
     )
 
     comparative_df.to_csv("comparative_scores.csv", index=False)
-
-    # ToDo: try with SQuAD dataset and see retrieval performance
 
 
 if __name__ == '__main__':
