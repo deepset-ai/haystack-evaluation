@@ -1,10 +1,9 @@
 # haystack-evaluation
 
-This repository contains examples on how to use Haystack to build RAG architectures and evaluate their performance using human annotated datasets.
+This repository contains examples on how to use Haystack to evaluate systems build with Haystack for different tasks 
+and datasets.
 
-
-Check out the following sections for more details:
-
+This repository is structured as:
 
 - [Evaluations](evaluations/README.md)
 
