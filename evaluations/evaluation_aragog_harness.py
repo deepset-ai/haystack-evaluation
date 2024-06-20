@@ -80,8 +80,6 @@ def eval_pipeline(questions, answers, pipeline, components, run_name, sas_embedd
     overrides = RAGEvaluationOverrides(
         eval_pipeline={
             RAGEvaluationMetric.SEMANTIC_ANSWER_SIMILARITY: {"model": sas_embedding_model},
-            # RAGEvaluationMetric.CONTEXT_RELEVANCE: {"raise_on_failure": False},
-            # RAGEvaluationMetric.ANSWER_FAITHFULNESS: {"raise_on_failure": False},
         }
     )
 
@@ -98,6 +96,9 @@ def main():
     chunk_size = 128
     top_k = 3
     doc_store = indexing(embeddings, chunk_size)
+
+    questions = questions[0:10]
+    answers = answers[0:10]
 
     # baseline RAG
     rag = basic_rag(document_store=doc_store, embedding_model=embeddings, top_k=top_k)
