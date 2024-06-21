@@ -1,0 +1,6 @@
+metrics,score
+doc_mrr,0.81
+sas,0.6950865586102009
+doc_map,0.81
+doc_recall_single_hit,0.81
+doc_recall_multi_hit,0.81

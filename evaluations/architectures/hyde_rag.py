@@ -80,13 +80,13 @@ class HypotheticalDocumentEmbedder:
         stacked_embeddings = array([doc.embedding for doc in result["embedder"]["documents"]])
         avg_embeddings = mean(stacked_embeddings, axis=0)
         hyde_vector = avg_embeddings.reshape((1, len(avg_embeddings)))
-        return {"hypothetical_embedding": hyde_vector[0].tolist()}
+        return {"hypothetical_embedding": hyde_vector[0].tolist(), "documents": result["embedder"]["documents"]}
 
 
-def rag_with_hyde(document_store, embedding_model, top_k=2):
+def rag_with_hyde(document_store, embedding_model, nr_completions=5, top_k=2):
     template = """
         You have to answer the following question based on the given context information only.
-        If the context is empty or just a '\n' answer "I don't know".
+        If the context is empty or just a '\n' answer with None, example: "None".
 
         Context:
         {% for document in documents %}
@@ -97,7 +97,7 @@ def rag_with_hyde(document_store, embedding_model, top_k=2):
         Answer:
         """
 
-    hyde = HypotheticalDocumentEmbedder(embedder_model=embedding_model)
+    hyde = HypotheticalDocumentEmbedder(embedder_model=embedding_model, nr_completions=nr_completions)
 
     hyde_rag = Pipeline()
     hyde_rag.add_component("hyde", hyde)
