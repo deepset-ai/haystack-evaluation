@@ -114,6 +114,12 @@ def main():
     results, inputs = run_evaluation(questions, answers, retrieved_contexts, predicted_answers, embedding_model)
     eval_results_base_rag = EvaluationRunResult(run_name="base-rag", inputs=inputs, results=results)
 
+    print(eval_results_rag_window.run_name)
+    print(eval_results_rag_window.score_report())
+    print()
+    print(eval_results_base_rag.run_name)
+    print(eval_results_base_rag.score_report())
+
     eval_results_base_rag.comparative_individual_scores_report(eval_results_rag_window).to_csv(
         "aragog_baseline-rag_vs_sentence-window.csv"
     )
