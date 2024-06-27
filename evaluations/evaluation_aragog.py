@@ -31,7 +31,7 @@ def indexing(embedding_model: str, chunk_size: int):
     pipeline = Pipeline()
     pipeline.add_component("converter", PyPDFToDocument())
     pipeline.add_component("cleaner", DocumentCleaner())
-    pipeline.add_component("splitter", DocumentSplitter(split_length=chunk_size))  # splitting by word
+    pipeline.add_component("splitter", DocumentSplitter(split_length=chunk_size, split_overlap=5))  # splitting by word
     pipeline.add_component("writer", DocumentWriter(document_store=document_store, policy=DuplicatePolicy.SKIP))
     pipeline.add_component("embedder", SentenceTransformersDocumentEmbedder(embedding_model))
     pipeline.connect("converter", "cleaner")
