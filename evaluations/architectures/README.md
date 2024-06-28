@@ -4,17 +4,17 @@
 
 Here we provide full examples on how to use Haystack to evaluate systems build also with Haystack for different tasks and datasets.
 
-Name                                    | Code                                 | Description                                                                                                        
-----------------------------------------|--------------------------------------|--------------------------------------------------------------------------------------------------------------------|
-Basic RAG                               | [basic_rag.py](basic_rag.py)         | Retrieves the top-k document chunks and then passes them to an LLM generate the answer. 
-Extractive QA                           | [extractive_qa.py](extractive_qa.py) | Retrieves the top-_k_ documents and uses an extractive QA model to extract the answer from the documents.
-Hypothetical Document Embeddings (HyDE) | [hyde_rag.py](hyde_rag.py)           | HyDE generates a hypothetical document from the query and uses it to retrieve similar documents from the document embedding space.
-Sentence-Window Retrieval               | ToDo                                 | Breaks down documents into smaller chunks (sentences) and indexes them separately. Retrieves the most relevant sentences and replaces them with the full surrounding context. 
-Document Summary Index                  | ToDo                                 | ToDo
-Multi-Query                             | ToDo                                 | ToDo
-Maximal Marginal Relevance (MMR)        | ToDo                                 | ToDo
-Cohere Re-ranker                        | ToDo                                 | ToDo
-LLM-based Re-ranker                     | ToDo                                 | ToDo
+Name                                    | Code                                                         | Description                                                                                                        
+----------------------------------------|--------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------|
+Basic RAG                               | [basic_rag.py](basic_rag.py)                                 | Retrieves the top-k document chunks and then passes them to an LLM generate the answer. 
+Extractive QA                           | [extractive_qa.py](extractive_qa.py)                         | Retrieves the top-_k_ documents and uses an extractive QA model to extract the answer from the documents.
+Hypothetical Document Embeddings (HyDE) | [hyde_rag.py](hyde_rag.py)                                   | HyDE generates a hypothetical document from the query and uses it to retrieve similar documents from the document embedding space.
+Sentence-Window Retrieval               | [sentence_window_retrieval.py](sentence_window_retrieval.py) | Breaks down documents into smaller chunks (sentences) and indexes them separately. Retrieves the most relevant sentences and replaces them with the full surrounding context. 
+Document Summary Index                  | ToDo                                                         | ToDo
+Multi-Query                             | ToDo                                                         | ToDo
+Maximal Marginal Relevance (MMR)        | ToDo                                                         | ToDo
+Cohere Re-ranker                        | ToDo                                                         | ToDo
+LLM-based Re-ranker                     | ToDo                                                         | ToDo
 
 
 
