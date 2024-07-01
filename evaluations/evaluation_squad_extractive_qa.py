@@ -97,6 +97,7 @@ def run_evaluation(embedding_model, ground_truth_docs, retrieved_docs, questions
     eval_pipeline.add_component("sas", SASEvaluator(model=embedding_model))
 
     # get the original documents from the retrieved documents which were split
+    """
     original_retrieved_docs = []
     for doc in retrieved_docs:
         original_docs = []
@@ -105,15 +106,16 @@ def run_evaluation(embedding_model, ground_truth_docs, retrieved_docs, questions
                 if split_doc.meta["name"] == original_doc[0].meta["name"]:
                     original_docs.append(original_doc[0])
         original_retrieved_docs.append(original_docs)
+    """
 
     eval_pipeline_results = eval_pipeline.run(
         {
-            "doc_mrr": {"ground_truth_documents": ground_truth_docs, "retrieved_documents": original_retrieved_docs},
+            "doc_mrr": {"ground_truth_documents": ground_truth_docs, "retrieved_documents": retrieved_docs},
             "sas": {"predicted_answers": predicted_answers, "ground_truth_answers": ground_truth_answers},
             "answer_exact": {"predicted_answers": predicted_answers, "ground_truth_answers": ground_truth_answers},
-            "doc_map": {"ground_truth_documents": ground_truth_docs, "retrieved_documents": original_retrieved_docs},
-            "doc_recall_single_hit": {"ground_truth_documents": ground_truth_docs, "retrieved_documents": original_retrieved_docs},
-            "doc_recall_multi_hit": {"ground_truth_documents": ground_truth_docs, "retrieved_documents": original_retrieved_docs}
+            "doc_map": {"ground_truth_documents": ground_truth_docs, "retrieved_documents": retrieved_docs},
+            "doc_recall_single_hit": {"ground_truth_documents": ground_truth_docs, "retrieved_documents": retrieved_docs},
+            "doc_recall_multi_hit": {"ground_truth_documents": ground_truth_docs, "retrieved_documents": retrieved_docs}
         }
     )
 
@@ -134,9 +136,9 @@ def run_evaluation(embedding_model, ground_truth_docs, retrieved_docs, questions
     return results, inputs
 
 
-def parameter_tuning(queries, documents):
+def parameter_tuning(queries, documents, out_path: str):
     """
-    Run the basic RAG model with different parameters, and evaluate the results.
+    Run the basic Extractive QA model with different parameters, and evaluate the results.
 
     The parameters to be tuned are: embedding model, top_k, and chunk_size.
     """
@@ -148,7 +150,7 @@ def parameter_tuning(queries, documents):
     top_k_values = [1, 2, 3]
     chunk_sizes = [5, 10, 15]
 
-    out_path = Path("squad_results_extractive_qa/")
+    out_path = Path(out_path)
     out_path.mkdir(exist_ok=True)
 
     questions = []
@@ -166,7 +168,7 @@ def parameter_tuning(queries, documents):
                 print(name_params)
                 print("Indexing documents")
                 doc_store = indexing(documents, embedding_model, chunk_size)
-                print("Running RAG pipeline")
+                print("Running Extractive QA pipeline")
                 retrieved_docs, predicted_answers = run_extractive_qa(doc_store, questions, embedding_model, top_k)
                 print(f"Running evaluation")
                 results, inputs = run_evaluation(
@@ -207,7 +209,7 @@ def main():
         queries = random.sample(all_queries, args.sample)
 
     print(f"Running evaluation on {args.sample} questions")
-    parameter_tuning(queries, documents)
+    parameter_tuning(queries, documents, args.output_dir)
 
 
 if __name__ == "__main__":
