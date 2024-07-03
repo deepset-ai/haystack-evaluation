@@ -26,6 +26,7 @@ def read_question_answers(base_path: str) -> Tuple[List[str], List[str]]:
         answers = data["ground_truths"]
     return questions, answers
 
+
 def indexing(embedding_model: str, chunk_size: int, base_path: str) -> InMemoryDocumentStore:
     full_path = Path(base_path)
     files_path = full_path / "papers_for_questions"
@@ -44,6 +45,7 @@ def indexing(embedding_model: str, chunk_size: int, base_path: str) -> InMemoryD
     pipeline.run({"converter": {"sources": pdf_files}})
 
     return document_store
+
 
 def run_evaluation(sample_questions, sample_answers, retrieved_contexts, predicted_answers, embedding_model):
     eval_pipeline = Pipeline()
@@ -71,6 +73,7 @@ def run_evaluation(sample_questions, sample_answers, retrieved_contexts, predict
 
     return results, inputs
 
+
 def run_rag(rag, questions):
     predicted_answers = []
     retrieved_contexts = []
@@ -87,6 +90,7 @@ def run_rag(rag, questions):
             retrieved_contexts.append(retrieved_contexts)
 
     return retrieved_contexts, predicted_answers
+
 
 def main():
 
