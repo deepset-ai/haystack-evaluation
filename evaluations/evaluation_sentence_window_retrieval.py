@@ -120,7 +120,7 @@ def main():
     print(eval_results_base_rag.run_name)
     print(eval_results_base_rag.score_report())
 
-    eval_results_base_rag.comparative_individual_scores_report(eval_results_rag_window).to_csv(
+    eval_results_base_rag.comparative_individual_scores_report(eval_results_rag_window, keep_columns=['predicted_answers']).to_csv(
         "aragog_baseline-rag_vs_sentence-window.csv"
     )
 
