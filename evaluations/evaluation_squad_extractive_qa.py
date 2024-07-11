@@ -97,7 +97,6 @@ def run_evaluation(embedding_model, ground_truth_docs, retrieved_docs, questions
     eval_pipeline.add_component("sas", SASEvaluator(model=embedding_model))
 
     # get the original documents from the retrieved documents which were split
-    """
     original_retrieved_docs = []
     for doc in retrieved_docs:
         original_docs = []
@@ -106,7 +105,6 @@ def run_evaluation(embedding_model, ground_truth_docs, retrieved_docs, questions
                 if split_doc.meta["name"] == original_doc[0].meta["name"]:
                     original_docs.append(original_doc[0])
         original_retrieved_docs.append(original_docs)
-    """
 
     eval_pipeline_results = eval_pipeline.run(
         {
