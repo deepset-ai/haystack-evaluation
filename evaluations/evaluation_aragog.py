@@ -3,21 +3,20 @@ import json
 import os
 import random
 from pathlib import Path
-from typing import Tuple, List
-from openai import BadRequestError
+from typing import List, Tuple
 
+from architectures.basic_rag import basic_rag
 from haystack import Pipeline
-from haystack.components.embedders import SentenceTransformersDocumentEmbedder
-from haystack.document_stores.in_memory import InMemoryDocumentStore
 from haystack.components.converters import PyPDFToDocument
+from haystack.components.embedders import SentenceTransformersDocumentEmbedder
 from haystack.components.evaluators import ContextRelevanceEvaluator, FaithfulnessEvaluator, SASEvaluator
 from haystack.components.preprocessors import DocumentCleaner, DocumentSplitter
 from haystack.components.writers import DocumentWriter
+from haystack.document_stores.in_memory import InMemoryDocumentStore
 from haystack.document_stores.types import DuplicatePolicy
 from haystack.evaluation import EvaluationRunResult
+from openai import BadRequestError
 from tqdm import tqdm
-
-from architectures.basic_rag import basic_rag
 from utils.utils import timeit
 
 base_path = "../datasets/ARAGOG/"
@@ -55,7 +54,7 @@ def read_question_answers() -> Tuple[List[str], List[str]]:
 @timeit
 def run_basic_rag(doc_store, sample_questions, embedding_model, top_k):
     """
-    A function to run the basic rag model on a set of sample questions and answers
+    Runs the basic rag model on a set of sample questions and answers.
     """
 
     rag = basic_rag(document_store=doc_store, embedding_model=embedding_model, top_k=top_k)
@@ -65,9 +64,10 @@ def run_basic_rag(doc_store, sample_questions, embedding_model, top_k):
     for q in tqdm(sample_questions):
         try:
             response = rag.run(
-                data={"query_embedder": {"text": q}, "prompt_builder": {"question": q}, "answer_builder": {"query": q}})
+                data={"query_embedder": {"text": q}, "prompt_builder": {"question": q}, "answer_builder": {"query": q}}
+            )
             predicted_answers.append(response["answer_builder"]["answers"][0].data)
-            retrieved_contexts.append([d.content for d in response['answer_builder']['answers'][0].documents])
+            retrieved_contexts.append([d.content for d in response["answer_builder"]["answers"][0].documents])
         except BadRequestError as e:
             print(f"Error with question: {q}")
             print(e)
@@ -87,29 +87,32 @@ def run_evaluation(sample_questions, sample_answers, retrieved_contexts, predict
     eval_pipeline_results = eval_pipeline.run(
         {
             "context_relevance": {"questions": sample_questions, "contexts": retrieved_contexts},
-            "faithfulness": {"questions": sample_questions,
-                             "contexts": retrieved_contexts,
-                             "predicted_answers": predicted_answers},
+            "faithfulness": {
+                "questions": sample_questions,
+                "contexts": retrieved_contexts,
+                "predicted_answers": predicted_answers,
+            },
             "sas": {"predicted_answers": predicted_answers, "ground_truth_answers": sample_answers},
         }
-
     )
 
     results = {
-        "context_relevance": eval_pipeline_results['context_relevance'],
-        "faithfulness": eval_pipeline_results['faithfulness'],
-        "sas": eval_pipeline_results['sas']
+        "context_relevance": eval_pipeline_results["context_relevance"],
+        "faithfulness": eval_pipeline_results["faithfulness"],
+        "sas": eval_pipeline_results["sas"],
     }
 
-    inputs = {'questions': sample_questions,
-              'contexts': retrieved_contexts,
-              'true_answers': sample_answers,
-              'predicted_answers': predicted_answers}
+    inputs = {
+        "questions": sample_questions,
+        "contexts": retrieved_contexts,
+        "true_answers": sample_answers,
+        "predicted_answers": predicted_answers,
+    }
 
     return results, inputs
 
 
-def parameter_tuning(questions, answers, out_path: str):
+def parameter_tuning(questions, answers, output_path: str):
     """
     Run the basic RAG model with different parameters, and evaluate the results.
 
@@ -118,13 +121,13 @@ def parameter_tuning(questions, answers, out_path: str):
     embedding_models = {
         "sentence-transformers/all-MiniLM-L6-v2",
         "sentence-transformers/msmarco-distilroberta-base-v2",
-        "sentence-transformers/all-mpnet-base-v2"
+        "sentence-transformers/all-mpnet-base-v2",
     }
     top_k_values = [1, 2, 3]
     chunk_sizes = [64, 128, 256]
 
     # create results directory if it does not exist using Pathlib
-    out_path = Path(out_path)
+    out_path = Path(output_path)
     out_path.mkdir(exist_ok=True)
 
     for embedding_model in embedding_models:
@@ -136,22 +139,19 @@ def parameter_tuning(questions, answers, out_path: str):
                 print(name_params)
                 print("Running RAG pipeline")
                 retrieved_contexts, predicted_answers = run_basic_rag(doc_store, questions, embedding_model, top_k)
-                print(f"Running evaluation")
-                results, inputs = run_evaluation(questions, answers, retrieved_contexts, predicted_answers, embedding_model)
+                print("Running evaluation")
+                results, inputs = run_evaluation(
+                    questions, answers, retrieved_contexts, predicted_answers, embedding_model
+                )
                 eval_results = EvaluationRunResult(run_name=name_params, inputs=inputs, results=results)
                 eval_results.score_report().to_csv(f"{out_path}/score_report_{name_params}.csv", index=False)
                 eval_results.to_pandas().to_csv(f"{out_path}/detailed_{name_params}.csv", index=False)
 
 
 def create_args():
-    parser = argparse.ArgumentParser(description='Run the ARAGOG dataset evaluation on a RAG pipeline')
-    parser.add_argument(
-        '--output-dir',
-        type=str,
-        help='The output directory for the results',
-        required=True
-    )
-    parser.add_argument('--sample', type=int, help='The number of questions to sample')
+    parser = argparse.ArgumentParser(description="Run the ARAGOG dataset evaluation on a RAG pipeline")
+    parser.add_argument("--output-dir", type=str, help="The output directory for the results", required=True)
+    parser.add_argument("--sample", type=int, help="The number of questions to sample")
     return parser.parse_args()
 
 
@@ -169,5 +169,5 @@ def main():
     parameter_tuning(questions, answers, args.output_dir)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

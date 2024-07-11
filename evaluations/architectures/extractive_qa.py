@@ -1,13 +1,15 @@
 from haystack import Pipeline
-from haystack.components.retrievers.in_memory import InMemoryEmbeddingRetriever
-from haystack.components.readers import ExtractiveReader
 from haystack.components.embedders import SentenceTransformersTextEmbedder
+from haystack.components.readers import ExtractiveReader
+from haystack.components.retrievers.in_memory import InMemoryEmbeddingRetriever
 
 
 def get_extractive_qa_pipeline(document_store, embedding_model, top_k_retriever):
     """
-    An extractive QA pipeline that uses a retriever to find relevant documents for a given question and a reader to
-    extract the answer from these documents.
+    An extractive question answering pipeline.
+
+    It uses a retriever to find relevant documents for a given question and a reader to extract the answer from
+    these documents.
     """
     embedder = SentenceTransformersTextEmbedder(model=embedding_model, progress_bar=False)
     retriever = InMemoryEmbeddingRetriever(document_store=document_store, top_k=top_k_retriever)

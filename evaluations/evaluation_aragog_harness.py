@@ -1,8 +1,10 @@
 import json
 import os
 from pathlib import Path
-from typing import Tuple, List
+from typing import List, Tuple
 
+from architectures.basic_rag import basic_rag
+from architectures.hyde_rag import rag_with_hyde
 from haystack import Pipeline
 from haystack.components.converters import PyPDFToDocument
 from haystack.components.embedders import SentenceTransformersDocumentEmbedder
@@ -12,15 +14,12 @@ from haystack.document_stores.in_memory import InMemoryDocumentStore
 from haystack.document_stores.types import DuplicatePolicy
 from haystack_experimental.evaluation.harness.rag import (
     RAGEvaluationHarness,
-    RAGEvaluationMetric,
     RAGEvaluationInput,
+    RAGEvaluationMetric,
+    RAGEvaluationOverrides,
     RAGExpectedComponent,
     RAGExpectedComponentMetadata,
-    RAGEvaluationOverrides
 )
-
-from architectures.basic_rag import basic_rag
-from architectures.hyde_rag import rag_with_hyde
 from utils.utils import timeit
 
 base_path = "../datasets/ARAGOG/"
@@ -57,37 +56,30 @@ def read_question_answers() -> Tuple[List[str], List[str]]:
 
 @timeit
 def eval_pipeline(questions, answers, pipeline, components, run_name, sas_embedding_model):
-
     pipeline_eval_harness = RAGEvaluationHarness(
         pipeline,
         metrics={
             RAGEvaluationMetric.SEMANTIC_ANSWER_SIMILARITY,
             RAGEvaluationMetric.ANSWER_FAITHFULNESS,
-            RAGEvaluationMetric.CONTEXT_RELEVANCE
+            RAGEvaluationMetric.CONTEXT_RELEVANCE,
         },
-        rag_components=components
+        rag_components=components,
     )
 
     hyde_eval_harness_input = RAGEvaluationInput(
         queries=questions,
         ground_truth_answers=answers,
         additional_rag_inputs={
-            "prompt_builder": {"question": [q for q in questions]},
-            "answer_builder": {"query": [q for q in questions]},
+            "prompt_builder": {"question": list(questions)},
+            "answer_builder": {"query": list(questions)},
         },
     )
 
     overrides = RAGEvaluationOverrides(
-        eval_pipeline={
-            RAGEvaluationMetric.SEMANTIC_ANSWER_SIMILARITY: {"model": sas_embedding_model},
-        }
+        eval_pipeline={RAGEvaluationMetric.SEMANTIC_ANSWER_SIMILARITY: {"model": sas_embedding_model}}
     )
 
-    return pipeline_eval_harness.run(
-        inputs=hyde_eval_harness_input,
-        run_name=run_name,
-        overrides=overrides
-    )
+    return pipeline_eval_harness.run(inputs=hyde_eval_harness_input, run_name=run_name, overrides=overrides)
 
 
 def main():
@@ -101,11 +93,14 @@ def main():
     rag = basic_rag(document_store=doc_store, embedding_model=embeddings, top_k=top_k)
     rag_components = {
         RAGExpectedComponent.QUERY_PROCESSOR: RAGExpectedComponentMetadata(
-            name="query_embedder", input_mapping={"query": "text"}),
+            name="query_embedder", input_mapping={"query": "text"}
+        ),
         RAGExpectedComponent.DOCUMENT_RETRIEVER: RAGExpectedComponentMetadata(
-            name="retriever", output_mapping={"retrieved_documents": "documents"}),
+            name="retriever", output_mapping={"retrieved_documents": "documents"}
+        ),
         RAGExpectedComponent.RESPONSE_GENERATOR: RAGExpectedComponentMetadata(
-            name="llm", output_mapping={"replies": "replies"})
+            name="llm", output_mapping={"replies": "replies"}
+        ),
     }
     baseline_rag_eval_output = eval_pipeline(questions, answers, rag, rag_components, "baseline_rag", embeddings)
 
@@ -113,11 +108,14 @@ def main():
     hyde_rag = rag_with_hyde(document_store=doc_store, embedding_model=embeddings, top_k=top_k, nr_completions=5)
     hyde_components = {
         RAGExpectedComponent.QUERY_PROCESSOR: RAGExpectedComponentMetadata(
-            name="hyde", input_mapping={"query": "query"}),
+            name="hyde", input_mapping={"query": "query"}
+        ),
         RAGExpectedComponent.DOCUMENT_RETRIEVER: RAGExpectedComponentMetadata(
-            name="retriever", output_mapping={"retrieved_documents": "documents"}),
+            name="retriever", output_mapping={"retrieved_documents": "documents"}
+        ),
         RAGExpectedComponent.RESPONSE_GENERATOR: RAGExpectedComponentMetadata(
-            name="llm", output_mapping={"replies": "replies"})
+            name="llm", output_mapping={"replies": "replies"}
+        ),
     }
     hyde_rag_eval_output = eval_pipeline(questions, answers, hyde_rag, hyde_components, "hyde_rag", embeddings)
 
@@ -132,5 +130,5 @@ def main():
     comparative_df.to_csv("comparative_scores.csv", index=False)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
