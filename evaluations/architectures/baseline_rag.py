@@ -1,11 +1,11 @@
 from haystack import Pipeline
-from haystack.components.builders import PromptBuilder, AnswerBuilder
+from haystack.components.builders import AnswerBuilder, PromptBuilder
 from haystack.components.embedders import SentenceTransformersTextEmbedder
 from haystack.components.generators import OpenAIGenerator
 from haystack.components.retrievers import InMemoryEmbeddingRetriever
 
 
-def basic_rag(document_store, embedding_model, top_k=2):
+def built_basic_rag(document_store, embedding_model, top_k=2):
     template = """
         You have to answer the following question based on the given context information only.
         If the context is empty or just a '\n' answer with None, example: "None".
@@ -20,9 +20,9 @@ def basic_rag(document_store, embedding_model, top_k=2):
         """
 
     basic_rag = Pipeline()
-    basic_rag.add_component("query_embedder", SentenceTransformersTextEmbedder(
-        model=embedding_model, progress_bar=False
-    ))
+    basic_rag.add_component(
+        "query_embedder", SentenceTransformersTextEmbedder(model=embedding_model, progress_bar=False)
+    )
     basic_rag.add_component("retriever", InMemoryEmbeddingRetriever(document_store, top_k=top_k))
     basic_rag.add_component("prompt_builder", PromptBuilder(template=template))
     basic_rag.add_component("llm", OpenAIGenerator(model="gpt-3.5-turbo"))

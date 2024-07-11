@@ -2,8 +2,9 @@ import json
 from collections import defaultdict
 from pathlib import Path
 
-from datasets import load_dataset
 from tqdm import tqdm
+
+from datasets import load_dataset
 
 
 def aggregate_wiki_title(data, agg_wiki_title):

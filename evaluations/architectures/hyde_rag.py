@@ -1,20 +1,17 @@
-from haystack import Pipeline, component, Document, default_to_dict, default_from_dict
+from typing import Any, Dict, List
+
+from haystack import Document, Pipeline, component, default_from_dict, default_to_dict
 from haystack.components.builders import AnswerBuilder, PromptBuilder
 from haystack.components.converters import OutputAdapter
 from haystack.components.embedders.sentence_transformers_document_embedder import SentenceTransformersDocumentEmbedder
 from haystack.components.generators.openai import OpenAIGenerator
-
-from typing import Dict, Any, List
-
 from haystack.components.retrievers import InMemoryEmbeddingRetriever
-from numpy import array, mean
-
 from haystack.utils import Secret
+from numpy import array, mean
 
 
 @component
 class HypotheticalDocumentEmbedder:
-
     def __init__(
         self,
         instruct_llm: str = "gpt-3.5-turbo",

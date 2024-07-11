@@ -1,13 +1,10 @@
 import json
 import os
 from pathlib import Path
-from typing import Tuple, List
+from typing import List, Tuple
 
-from openai import BadRequestError
-from tqdm import tqdm
-
+from architectures.baseline_rag import built_basic_rag
 from architectures.sentence_window_retrieval import rag_sentence_window_retrieval
-from architectures.basic_rag import basic_rag
 from haystack import Pipeline
 from haystack.components.converters import PyPDFToDocument
 from haystack.components.embedders import SentenceTransformersDocumentEmbedder
@@ -17,6 +14,8 @@ from haystack.components.writers import DocumentWriter
 from haystack.document_stores.in_memory import InMemoryDocumentStore
 from haystack.document_stores.types import DuplicatePolicy
 from haystack.evaluation import EvaluationRunResult
+from openai import BadRequestError
+from tqdm import tqdm
 
 
 def read_question_answers(base_path: str) -> Tuple[List[str], List[str]]:
@@ -54,22 +53,29 @@ def run_evaluation(sample_questions, sample_answers, retrieved_contexts, predict
     eval_pipeline.add_component("sas", SASEvaluator(model=embedding_model))
 
     eval_pipeline_results = eval_pipeline.run(
-        {"context_relevance": {"questions": sample_questions, "contexts": retrieved_contexts},
-         "faithfulness": {"questions": sample_questions, "contexts": retrieved_contexts, "predicted_answers": predicted_answers},
-         "sas": {"predicted_answers": predicted_answers, "ground_truth_answers": sample_answers}
-         }
+        {
+            "context_relevance": {"questions": sample_questions, "contexts": retrieved_contexts},
+            "faithfulness": {
+                "questions": sample_questions,
+                "contexts": retrieved_contexts,
+                "predicted_answers": predicted_answers,
+            },
+            "sas": {"predicted_answers": predicted_answers, "ground_truth_answers": sample_answers},
+        }
     )
 
     results = {
-        "context_relevance": eval_pipeline_results['context_relevance'],
-        "faithfulness": eval_pipeline_results['faithfulness'],
-        "sas": eval_pipeline_results['sas']
+        "context_relevance": eval_pipeline_results["context_relevance"],
+        "faithfulness": eval_pipeline_results["faithfulness"],
+        "sas": eval_pipeline_results["sas"],
     }
 
-    inputs = {'questions': sample_questions,
-              'contexts': retrieved_contexts,
-              'true_answers': sample_answers,
-              'predicted_answers': predicted_answers}
+    inputs = {
+        "questions": sample_questions,
+        "contexts": retrieved_contexts,
+        "true_answers": sample_answers,
+        "predicted_answers": predicted_answers,
+    }
 
     return results, inputs
 
@@ -80,9 +86,10 @@ def run_rag(rag, questions):
     for q in tqdm(questions):
         try:
             response = rag.run(
-                data={"query_embedder": {"text": q}, "prompt_builder": {"question": q}, "answer_builder": {"query": q}})
+                data={"query_embedder": {"text": q}, "prompt_builder": {"question": q}, "answer_builder": {"query": q}}
+            )
             predicted_answers.append(response["answer_builder"]["answers"][0].data)
-            retrieved_contexts.append([d.content for d in response['answer_builder']['answers'][0].documents])
+            retrieved_contexts.append([d.content for d in response["answer_builder"]["answers"][0].documents])
         except BadRequestError as e:
             print(f"Error with question: {q}")
             print(e)
@@ -93,7 +100,6 @@ def run_rag(rag, questions):
 
 
 def main():
-
     base_path = "../datasets/ARAGOG/"
     embedding_model = "sentence-transformers/all-MiniLM-L6-v2"
     chunk_size = 128
@@ -109,7 +115,7 @@ def main():
     eval_results_rag_window = EvaluationRunResult(run_name="window-retrieval", inputs=inputs, results=results)
 
     # Baseline RAG
-    rag = basic_rag(doc_store, embedding_model, top_k)
+    rag = built_basic_rag(doc_store, embedding_model, top_k)
     retrieved_contexts, predicted_answers = run_rag(rag, questions)
     results, inputs = run_evaluation(questions, answers, retrieved_contexts, predicted_answers, embedding_model)
     eval_results_base_rag = EvaluationRunResult(run_name="base-rag", inputs=inputs, results=results)
@@ -120,10 +126,10 @@ def main():
     print(eval_results_base_rag.run_name)
     print(eval_results_base_rag.score_report())
 
-    eval_results_base_rag.comparative_individual_scores_report(eval_results_rag_window).to_csv(
-        "aragog_baseline-rag_vs_sentence-window.csv"
-    )
+    eval_results_base_rag.comparative_individual_scores_report(
+        eval_results_rag_window, keep_columns=["predicted_answers"]
+    ).to_csv("aragog_baseline-rag_vs_sentence-window.csv")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
