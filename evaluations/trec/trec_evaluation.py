@@ -6,15 +6,10 @@ from dataclasses import dataclass
 from random import choice
 from typing import Dict, List, Set
 
-from haystack import Document, Pipeline, component
-from haystack.components.builders import AnswerBuilder, PromptBuilder
-from haystack.components.embedders import SentenceTransformersDocumentEmbedder, SentenceTransformersTextEmbedder
-from haystack.components.generators import OpenAIGenerator
-from haystack.components.preprocessors import DocumentSplitter
-from haystack.components.writers import DocumentWriter
-from haystack.document_stores.types import DuplicatePolicy
-from haystack_integrations.components.retrievers.qdrant import QdrantEmbeddingRetriever
+from haystack import Document, component
 from haystack_integrations.document_stores.qdrant import QdrantDocumentStore
+
+from evaluations.trec.pipelines import built_basic_rag, indexing, pipeline_task_1
 
 
 @dataclass
@@ -98,68 +93,6 @@ def get_qdrant_doc_store(embedding_dim: int = 768):
     return doc_store
 
 
-@component
-class ParseTRECCorpus:
-    @staticmethod
-    def create_document(line: str):
-        doc = json.loads(line)
-        return Document(content=doc["segment"], meta={"docid": doc["docid"], "url": doc["url"]})
-
-    @component.output_types(segments=List[Document])
-    def run(self, files: List[str]):
-        for file in files:
-            with open(file, "r") as f:
-                results = [self.create_document(line) for line in f]
-        return {"segments": results}
-
-
-def indexing(doc_store, model: str, chunk_size: int, files_to_index: Set[str]):
-    pipeline = Pipeline()
-    pipeline.add_component("converter", ParseTRECCorpus())
-    pipeline.add_component("splitter", DocumentSplitter(split_length=chunk_size, split_overlap=5))  # splitting by word
-    pipeline.add_component("writer", DocumentWriter(document_store=doc_store, policy=DuplicatePolicy.SKIP))
-    pipeline.add_component("embedder", SentenceTransformersDocumentEmbedder(model))
-    pipeline.connect("converter", "splitter")
-    pipeline.connect("splitter", "embedder")
-    pipeline.connect("embedder", "writer")
-    pipeline.run({"converter": {"files": files_to_index}})
-
-    return doc_store
-
-
-def built_basic_rag(document_store, embedding_model, top_k=2):
-    template = """
-        You have to answer the following question based on the given context information only.
-        If the context is empty or just a '\n' answer with None, example: "None".
-
-        Context:
-        {% for document in documents %}
-            {{ document.content }}
-        {% endfor %}
-
-        Question: {{question}}
-        Answer:
-        """
-
-    basic_rag = Pipeline()
-    basic_rag.add_component(
-        "query_embedder", SentenceTransformersTextEmbedder(model=embedding_model, progress_bar=False)
-    )
-    basic_rag.add_component("retriever", QdrantEmbeddingRetriever(document_store, top_k=top_k))
-    basic_rag.add_component("prompt_builder", PromptBuilder(template=template))
-    basic_rag.add_component("llm", OpenAIGenerator(model="gpt-3.5-turbo"))
-    basic_rag.add_component("answer_builder", AnswerBuilder())
-
-    basic_rag.connect("query_embedder", "retriever.query_embedding")
-    basic_rag.connect("retriever", "prompt_builder.documents")
-    basic_rag.connect("prompt_builder", "llm")
-    basic_rag.connect("llm.replies", "answer_builder.replies")
-    basic_rag.connect("llm.meta", "answer_builder.meta")
-    basic_rag.connect("retriever", "answer_builder.documents")
-
-    return basic_rag
-
-
 def prepare():
     topics = read_topics("topics/topics.dl23.txt")
     queries = read_query_relevance("qrels/qrels.dl23-doc-msmarco-v2.1.txt")
@@ -173,16 +106,48 @@ def prepare():
     doc_store = get_qdrant_doc_store(embedding_dim)
     indexing(doc_store, model, 128, files_to_index)
 
-    rag = built_basic_rag(doc_store, model, top_k=2)
+    return doc_store, topics, queries
 
-    # choose a random entry from the topics
-    random_key = choice(list(topics.keys()))
-    question = topics[random_key]
 
-    rag.run(
-        {
-            "query_embedder": {"text": question},
-            "prompt_builder": {"question": question},
-            "answer_builder": {"query": question},
-        }
-    )
+def write_results(results, output_file):
+    with open(output_file, "w") as f:
+        for result in results:
+            f.write(result)
+
+
+def task_1():
+    """
+    RAG Task 1: Retrieval
+
+    For each topic, the system needs to return the TREC runfile containing the ranked list containing the
+    top 20 relevant segment IDs from the collection. The topics provided will be non-factoid and require
+    long-form answer generation.
+
+    Output Format (Ranked Results)
+    Participants should provide their output in the standard TREC format containing top-k=20 MS MARCO v2.1 segments as
+    TSV: <r_output_trec_rag_2024.tsv> for each individual topic.Each set of ranked results for a set of topics appears
+    in a single file:
+
+    Topic ID (taken from trec_rag_2024_queries.tsv)
+    The fixed string “Q0”
+    Segment ID (from the docid field in msmarco_v2.1_doc_segmented_XX.json.gz)
+    Score (integer or float, selected by your system)
+    Run ID where you should mention your team-name (e.g. my-team-name)
+    """
+
+    doc_store, topics, queries = prepare()
+
+    retrieval = pipeline_task_1(doc_store, "all-MiniLM-L12-v2")
+    run_results = []
+
+    for topic_id, question in topics.items():
+        print(topic_id, "\t", question)
+        retrieved_docs = retrieval.run({"query_embedder": {"text": question}, "retriever": {"top_k": 20}})
+        for result in retrieved_docs["retriever"]["documents"]:
+            out = f"{topic_id}\tQ0\t{result.meta['docid']}\t{result.score}\tdeepset-trec2024\n"
+            run_results.append(out)
+
+    output_file = "task_1_trec_rag_2024_queries.tsv"
+    with open(output_file, "w") as f:
+        for result in run_results:
+            f.write(result)
