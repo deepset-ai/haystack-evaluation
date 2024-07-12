@@ -1,0 +1,88 @@
+name: Code Quality Checks
+
+on:
+  workflow_dispatch: # Activate this workflow manually
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+    paths:
+      - "evaluations"
+      - "pyproject.toml"
+
+env:
+  PYTHON_VERSION: "3.8"
+  HATCH_VERSION: "1.9.3"
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "${{ env.PYTHON_VERSION }}"
+
+      - name: Install Hatch
+        run: pip install hatch==${{ env.HATCH_VERSION }}
+
+      - name: Check file format
+        run: hatch run format-check
+
+      - name: Check linting
+        run: hatch run check
+
+      - name: Check presence of license header
+        run: docker run --rm -v "$(pwd):/github/workspace" ghcr.io/korandoru/hawkeye check
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # With the default value of 1, there are corner cases where tj-actions/changed-files
+          # fails with a `no merge base` error
+          fetch-depth: 0
+
+      - name: Get changed files
+        id: files
+        uses: tj-actions/changed-files@v44
+        with:
+          files: |
+            **/*.py
+          files_ignore: |
+            test/**
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "${{ env.PYTHON_VERSION }}"
+
+      - name: Install Hatch
+        id: hatch
+        run: |
+          pip install hatch==${{ env.HATCH_VERSION }}
+          echo "env=$(hatch env find test)" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/cache/restore@v4
+        id: cache
+        with:
+          path: ${{ steps.hatch.outputs.env }}
+          key: ${{ runner.os }}-${{ github.sha }}
+
+      - name: Mypy
+        if: steps.files.outputs.any_changed == 'true'
+        run: |
+          mkdir .mypy_cache
+          hatch run test:types ${{ steps.files.outputs.all_changed_files }}
+
+      - name: Pylint
+        if: steps.files.outputs.any_changed == 'true'
+        run: |
+          hatch run test:lint ${{ steps.files.outputs.all_changed_files }}
