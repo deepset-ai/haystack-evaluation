@@ -40,25 +40,25 @@ def indexing(doc_store, model: str, chunk_size: int, files_to_index: Set[str]):
     return doc_store
 
 
-def built_basic_rag(document_store, embedding_model, top_k=2):
-    template = """
-        You have to answer the following question based on the given context information only.
-        If the context is empty or just a '\n' answer with None, example: "None".
-
-        Context:
-        {% for document in documents %}
-            {{ document.content }}
-        {% endfor %}
-
-        Question: {{question}}
-        Answer:
-        """
+def built_basic_rag(document_store, embedding_model):
+    template = (
+        "You have to answer the following question based on the contexts given below. "
+        "If all the contexts are empty answer with None, example: None. "
+        "Otherwise, analyze all the contexts and build a coherent answer and complete answer. "
+        "Split your answer into multiple sentences, and for each sentence please provide the context number "
+        "that you used to generate that sentence."
+        "{% for document in documents %}"
+        "Context {{loop.index}}: {{document.content}}"
+        "{%endfor %}"
+        "Question: {{question}}"
+        "Answer:"
+    )
 
     basic_rag = Pipeline()
     basic_rag.add_component(
         "query_embedder", SentenceTransformersTextEmbedder(model=embedding_model, progress_bar=False)
     )
-    basic_rag.add_component("retriever", QdrantEmbeddingRetriever(document_store, top_k=top_k))
+    basic_rag.add_component("retriever", QdrantEmbeddingRetriever(document_store))
     basic_rag.add_component("prompt_builder", PromptBuilder(template=template))
     basic_rag.add_component("llm", OpenAIGenerator(model="gpt-3.5-turbo"))
     basic_rag.add_component("answer_builder", AnswerBuilder())

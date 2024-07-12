@@ -3,13 +3,11 @@ import os
 import re
 from collections import defaultdict
 from dataclasses import dataclass
-from random import choice
 from typing import Dict, List, Set
 
-from haystack import Document, component
 from haystack_integrations.document_stores.qdrant import QdrantDocumentStore
 
-from evaluations.trec.pipelines import built_basic_rag, indexing, pipeline_task_1
+from evaluations.trec.pipelines import built_basic_rag, pipeline_task_1
 
 
 @dataclass
@@ -93,31 +91,9 @@ def get_qdrant_doc_store(embedding_dim: int = 768):
     return doc_store
 
 
-def prepare():
-    topics = read_topics("topics/topics.dl23.txt")
-    queries = read_query_relevance("qrels/qrels.dl23-doc-msmarco-v2.1.txt")
-    topics_id = set(topics.keys()).intersection(set(queries.keys()))
-    docs = []
-    for k in topics_id:
-        docs.extend([entry.document_id for entry in queries[k]])
-    files_to_index = read_documents(set(docs), "../TREC/corpus/")
-    model = "all-MiniLM-L12-v2"
-    embedding_dim = 384
-    doc_store = get_qdrant_doc_store(embedding_dim)
-    indexing(doc_store, model, 128, files_to_index)
-
-    return doc_store, topics, queries
-
-
-def write_results(results, output_file):
-    with open(output_file, "w") as f:
-        for result in results:
-            f.write(result)
-
-
-def task_1():
+def task_1(doc_store, topics):
     """
-    RAG Task 1: Retrieval
+    RAG Task 1: Retrieval - https://trec-rag.github.io/annoucements/2024-track-guidelines/
 
     For each topic, the system needs to return the TREC runfile containing the ranked list containing the
     top 20 relevant segment IDs from the collection. The topics provided will be non-factoid and require
@@ -125,17 +101,15 @@ def task_1():
 
     Output Format (Ranked Results)
     Participants should provide their output in the standard TREC format containing top-k=20 MS MARCO v2.1 segments as
-    TSV: <r_output_trec_rag_2024.tsv> for each individual topic.Each set of ranked results for a set of topics appears
+    TSV: <r_output_trec_rag_2024.tsv> for each individual topic. Each set of ranked results for a set of topics appears
     in a single file:
 
-    Topic ID (taken from trec_rag_2024_queries.tsv)
-    The fixed string “Q0”
-    Segment ID (from the docid field in msmarco_v2.1_doc_segmented_XX.json.gz)
-    Score (integer or float, selected by your system)
-    Run ID where you should mention your team-name (e.g. my-team-name)
+    - Topic ID
+    - The fixed string “Q0”
+    - Segment ID (from the docid field in msmarco_v2.1_doc_segmented_XX.json.gz)
+    - Score (integer or float, selected by your system)
+    - Run ID where you should mention your team-name (e.g. my-team-name)
     """
-
-    doc_store, topics, queries = prepare()
 
     retrieval = pipeline_task_1(doc_store, "all-MiniLM-L12-v2")
     run_results = []
@@ -147,7 +121,94 @@ def task_1():
             out = f"{topic_id}\tQ0\t{result.meta['docid']}\t{result.score}\tdeepset-trec2024\n"
             run_results.append(out)
 
-    output_file = "task_1_trec_rag_2024_queries.tsv"
+    output_file = "r_output_trec_rag_2024.tsv"
     with open(output_file, "w") as f:
         for result in run_results:
             f.write(result)
+
+
+def task_2(doc_store, topics):
+    """
+    RAG Task 2: Augmented Generation Task (AG) - https://trec-rag.github.io/annoucements/2024-track-guidelines/
+
+    The Augmented Generation task emulates the modern-day RAG task to return the summarized answer ground based on the
+    information available in the pre-determined list of top-k segments provided to the participant.
+
+    Participating systems will receive:
+     - a list of topics,
+     - MS MARCO V2.1 segment collection
+     - the ranked list of the top-k relevant segments for each individual topic.
+
+    Output Format (AG Output)
+    The final RAG answer should provided in the following JSON format. Each line of this JSONL file contains the
+    following entries:
+
+    - run_id (string) containing your team name (e.g. “my-awesome-team-name”)
+    - topic_id (string) from the topic_id taken from trec_rag_2024_queries.tsv
+    - topic (string) the sentence-level description of the topic taken from trec_rag_2024_queries.tsv
+    - references (array) containing the ranked list of top-k segment IDs from the retrieval stage
+        (a maximum of only 20 segments is allowed)
+    - response_length (integer) containing the total words present in the overall RAG response.
+    - answer (array) containing the list of sentences and citations from the references list. The text field contains
+    the response and citations field contains the (zero-indexed) reference of the segment from the references list.
+
+    see an example at: https://trec-rag.github.io/annoucements/2024-track-guidelines/
+    """
+    # ToDo: Implement Task 2 when baselines are released
+
+
+def task_3(doc_store, topics):
+    """
+    Task 3: Retrieval-Augmented Generation Task (RAG) - https://trec-rag.github.io/annoucements/2024-track-guidelines/
+
+    Given: Participants will be provided a list of topics and both the MS MARCO v2.1 document and
+           MS MARCO v2.1 segment collections.
+
+    Task: Return the summarized answer and ground based on information which you can either the MS MARCO v2.1
+          document or segment collection. Develop your own retrieval system to fetch relevant information from the
+          MS MARCO v2.1 segment/document collection.
+
+    Output Format (RAG Output) - same as for Task 2
+    """
+
+    rag = built_basic_rag(doc_store, "all-MiniLM-L12-v2")
+
+    for topic_id, question in topics.items():
+        print(topic_id, "\t", question)
+        data = {
+            "query_embedder": {"text": question},
+            "retriever": {"top_k": 20},
+            "prompt_builder": {"question": question},
+            "answer_builder": {"query": question},
+        }
+        _ = rag.run(data, include_outputs_from=["retriever", "llm", "answer_builder", "prompt_builder"])
+
+    """
+    # ToDO. the expected output is a JSON file with the following format:
+
+    output = {
+        "run_id": "my-awesome-team-name",
+        "topic_id": "2027497",
+        "topic": "how often should you take your toddler to the potty when potty training",
+        "references": [],
+        "response_length": 0,
+        "answer": [{"text": None, "citations": []}]
+    }
+    """
+
+
+def run_task():
+    topics_file = "topics/topics.dl23.txt"
+    queries = "qrels/qrels.dl23-doc-msmarco-v2.1.txt"
+
+    # ToDo: do some indexing of the documents here
+    embedding_dim = 384
+    doc_store = get_qdrant_doc_store(embedding_dim)
+
+    # read topics and queries
+    all_topics = read_topics(topics_file)
+    query_relevance = read_query_relevance(queries)
+    _ = set(all_topics.keys()).intersection(set(query_relevance.keys()))  # topics w/ relevance judgements
+
+    task_1(doc_store, all_topics)
+    task_3(doc_store, all_topics[0:10])
