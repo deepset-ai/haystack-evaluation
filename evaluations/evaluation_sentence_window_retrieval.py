@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 from typing import List, Tuple
 
-from architectures.basic_rag import basic_rag
+from architectures.baseline_rag import built_basic_rag
 from architectures.sentence_window_retrieval import rag_sentence_window_retrieval
 from haystack import Pipeline
 from haystack.components.converters import PyPDFToDocument
@@ -115,7 +115,7 @@ def main():
     eval_results_rag_window = EvaluationRunResult(run_name="window-retrieval", inputs=inputs, results=results)
 
     # Baseline RAG
-    rag = basic_rag(doc_store, embedding_model, top_k)
+    rag = built_basic_rag(doc_store, embedding_model, top_k)
     retrieved_contexts, predicted_answers = run_rag(rag, questions)
     results, inputs = run_evaluation(questions, answers, retrieved_contexts, predicted_answers, embedding_model)
     eval_results_base_rag = EvaluationRunResult(run_name="base-rag", inputs=inputs, results=results)

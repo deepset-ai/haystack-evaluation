@@ -5,7 +5,7 @@ import random
 from pathlib import Path
 from typing import List, Tuple
 
-from architectures.basic_rag import basic_rag
+from architectures.baseline_rag import built_basic_rag
 from haystack import Pipeline
 from haystack.components.converters import PyPDFToDocument
 from haystack.components.embedders import SentenceTransformersDocumentEmbedder
@@ -57,7 +57,7 @@ def run_basic_rag(doc_store, sample_questions, embedding_model, top_k):
     Runs the basic rag model on a set of sample questions and answers.
     """
 
-    rag = basic_rag(document_store=doc_store, embedding_model=embedding_model, top_k=top_k)
+    rag = built_basic_rag(document_store=doc_store, embedding_model=embedding_model, top_k=top_k)
 
     predicted_answers = []
     retrieved_contexts = []

@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 from typing import List, Tuple
 
-from architectures.basic_rag import basic_rag
+from architectures.baseline_rag import built_basic_rag
 from architectures.hyde_rag import rag_with_hyde
 from haystack import Pipeline
 from haystack.components.converters import PyPDFToDocument
@@ -90,7 +90,7 @@ def main():
     doc_store = indexing(embeddings, chunk_size)
 
     # baseline RAG
-    rag = basic_rag(document_store=doc_store, embedding_model=embeddings, top_k=top_k)
+    rag = built_basic_rag(document_store=doc_store, embedding_model=embeddings, top_k=top_k)
     rag_components = {
         RAGExpectedComponent.QUERY_PROCESSOR: RAGExpectedComponentMetadata(
             name="query_embedder", input_mapping={"query": "text"}
