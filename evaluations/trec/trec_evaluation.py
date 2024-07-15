@@ -197,18 +197,23 @@ def task_3(doc_store, topics):
     """
 
 
-def run_task():
-    topics_file = "topics/topics.dl23.txt"
-    queries = "qrels/qrels.dl23-doc-msmarco-v2.1.txt"
+def run_tasks():
+    topics_file = "../datasets/TREC/topics/topics.dl23.txt"
+    queries = "../datasets/TREC/qrels/qrels.dl23-doc-msmarco-v2.1.txt"
 
-    # ToDo: do some indexing of the documents here
+    # ToDo: do some indexing of the documents here, we assume there's
     embedding_dim = 384
     doc_store = get_qdrant_doc_store(embedding_dim)
 
     # read topics and queries
     all_topics = read_topics(topics_file)
     query_relevance = read_query_relevance(queries)
-    _ = set(all_topics.keys()).intersection(set(query_relevance.keys()))  # topics w/ relevance judgements
+    ground_truth = set(all_topics.keys()).intersection(set(query_relevance.keys()))  # topics w/ relevance judgements
+    print(len(ground_truth))
 
     task_1(doc_store, all_topics)
     task_3(doc_store, all_topics[0:10])
+
+
+if __name__ == "__main__":
+    run_tasks()
