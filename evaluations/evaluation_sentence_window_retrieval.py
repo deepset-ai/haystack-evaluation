@@ -53,23 +53,9 @@ def run_evaluation(sample_questions, sample_answers, retrieved_contexts, predict
     eval_pipeline.add_component("sas", SASEvaluator(model=embedding_model))
 
     eval_pipeline_results = eval_pipeline.run(
-        {
-            "context_relevance": {"questions": sample_questions, "contexts": retrieved_contexts},
-            "faithfulness": {
-                "questions": sample_questions,
-                "contexts": retrieved_contexts,
-                "predicted_answers": predicted_answers,
-            },
-            "sas": {"predicted_answers": predicted_answers, "ground_truth_answers": sample_answers},
-        }
+        {"sas": {"predicted_answers": predicted_answers, "ground_truth_answers": sample_answers}}
     )
-
-    results = {
-        "context_relevance": eval_pipeline_results["context_relevance"],
-        "faithfulness": eval_pipeline_results["faithfulness"],
-        "sas": eval_pipeline_results["sas"],
-    }
-
+    results = {"sas": eval_pipeline_results["sas"]}
     inputs = {
         "questions": sample_questions,
         "contexts": retrieved_contexts,
@@ -108,13 +94,13 @@ def main():
     questions, answers = read_question_answers(base_path)
     doc_store = indexing(embedding_model, chunk_size, base_path)
 
-    # RAG with sentence window retrieval
+    # sentence-window retrieval RAG
     rag_window_retrieval = rag_sentence_window_retrieval(doc_store, embedding_model, top_k)
     retrieved_contexts, predicted_answers = run_rag(rag_window_retrieval, questions)
     results, inputs = run_evaluation(questions, answers, retrieved_contexts, predicted_answers, embedding_model)
     eval_results_rag_window = EvaluationRunResult(run_name="window-retrieval", inputs=inputs, results=results)
 
-    # Baseline RAG
+    # baseline RAG
     rag = built_basic_rag(doc_store, embedding_model, top_k)
     retrieved_contexts, predicted_answers = run_rag(rag, questions)
     results, inputs = run_evaluation(questions, answers, retrieved_contexts, predicted_answers, embedding_model)
