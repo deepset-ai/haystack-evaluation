@@ -6,8 +6,7 @@ version = "0.0.1"
 dependencies = [
   "pre-commit",
   "ruff",
-  "haystack-ai",
-  "haystack_experimental"
+  "haystack-ai"
 ]
 
 [tool.hatch.envs.default.scripts]
