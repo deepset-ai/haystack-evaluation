@@ -72,7 +72,7 @@ def run_basic_rag(doc_store, sample_questions, embedding_model, top_k):
             print(f"Error with question: {q}")
             print(e)
             predicted_answers.append("error")
-            retrieved_contexts.append(retrieved_contexts)
+            retrieved_contexts.append([])
 
     return retrieved_contexts, predicted_answers
 
