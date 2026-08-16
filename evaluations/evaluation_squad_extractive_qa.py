@@ -76,8 +76,14 @@ def run_extractive_qa(doc_store, questions, embedding_model, top_k_retriever):
         response = extractive_qa.run(
             data={"embedder": {"text": q}, "retriever": {"top_k": top_k_retriever}, "reader": {"query": q, "top_k": 1}}
         )
-        retrieved_docs.append([answer.document for answer in response["reader"]["answers"]])
-        predicted_answers.append(response["reader"]["answers"][0].data)
+        answers = response["reader"]["answers"]
+        retrieved_docs.append([answer.document for answer in answers])
+        try:
+            predicted_answers.append(answers[0].data)
+        except IndexError:
+            print(f"Error with question: {q}")
+            print("Reader returned no answers")
+            predicted_answers.append("error")
 
     return retrieved_docs, predicted_answers
 
